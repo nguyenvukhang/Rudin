@@ -14,6 +14,5 @@ import Rudin.Partition.Prelude
 import Rudin.Partition.Prelude.Nodup
 import Rudin.Partition.Prelude.SortedList
 import Rudin.Partition.Single
-import Rudin.Partition.Sums
 import Rudin.Partition.Union
 -- WARNING: THIS FILE IS AUTO-GENERATED.

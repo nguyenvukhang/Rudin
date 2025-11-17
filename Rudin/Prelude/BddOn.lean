@@ -3,6 +3,7 @@ This file introduces BddOn, which is BddAbove ∧ BddBelow
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Defs
+import Mathlib.Data.Real.Archimedean
 
 universe u v
 
@@ -107,7 +108,7 @@ theorem BddOn.abs_iff [Lattice R] [AddLeftMono R] [AddRightMono R] : BddOn f A �
 
 end Real.ish
 
-section Real.exact
+section RealValuedFunctions
 -- Theorems in here are new and so they probably spawn midway through going
 -- through lecture notes or doing homework. Not the best time to generalize.
 -- Some are just chilling. And that's okay.
@@ -160,7 +161,11 @@ theorem BddOn.mono (s : BddOn f A) {B : Set β} (h : B ⊆ A) : BddOn f B := by
   have h : f '' B ⊆ f '' A := Set.image_mono h
   refine { below' := s.below'.mono h, above' := s.above'.mono h }
 
-end Real.exact
+theorem BddOn.sInf_le_sSup (s : BddOn f A) : sInf (f '' A) ≤ sSup (f '' A)
+  := by --
+  exact Real.sInf_le_sSup (f '' A) s.below' s.above' -- ∎
+
+end RealValuedFunctions
 
 section ConditionallyCompleteLattice_lemmas
 
@@ -182,6 +187,10 @@ theorem BddOn.csSup_lt {ε : R} (s : BddOn f A) (h : sSup (f '' A) < ε)
   : ∀ x ∈ A, f x < ε
   := by --
   exact fun x hx => (s.le_csSup x hx).trans_lt h -- ∎
+
+theorem BddOn.csInf_le_csSup (s : BddOn f A) (hA : A.Nonempty) : sInf (f '' A) ≤ sSup (f '' A)
+  := by --
+  exact _root_.csInf_le_csSup s.below' s.above' (hA.image f) -- ∎
 
 end ConditionallyCompleteLattice_lemmas
 
