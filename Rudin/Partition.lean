@@ -1,0 +1,19 @@
+import Rudin.Partition.Core
+import Rudin.Partition.Core.Endpoints
+import Rudin.Partition.Core.Index
+import Rudin.Partition.Core.Length
+import Rudin.Partition.Core.Monotone
+import Rudin.Partition.Cover
+import Rudin.Partition.Defs
+import Rudin.Partition.Endpoints
+import Rudin.Partition.Insert
+import Rudin.Partition.Interval
+import Rudin.Partition.Monotone
+import Rudin.Partition.OrderBot
+import Rudin.Partition.Prelude
+import Rudin.Partition.Prelude.Nodup
+import Rudin.Partition.Prelude.SortedList
+import Rudin.Partition.Single
+import Rudin.Partition.Sums
+import Rudin.Partition.Union
+-- WARNING: THIS FILE IS AUTO-GENERATED.
