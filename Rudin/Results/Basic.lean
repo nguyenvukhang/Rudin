@@ -20,6 +20,43 @@ theorem α_nonneg (i : Fin P.n) : (0 : ℝ) ≤ α P[i] - α P[↑i - 1]
   · exact P.mem_principal_fin
   · exact P.get_mono (Nat.sub_le i 1) -- ∎
 
+include hα in
+theorem α_nonneg₂ (P : Partition I) (i : ℕ) : (0 : ℝ) ≤ α (P i) - α (P (i - 1))
+  := by --
+  if hi : i < P.n then
+    have : P i = P[i] := by rw [P.fun_eq, dif_pos hi]
+    rw [this]
+    have : i - 1 < P.n := Nat.sub_lt_of_lt hi
+    rw [P.fun_eq_lt this]
+    exact α_nonneg hα ⟨i, hi⟩
+  else
+  have : P.n ≤ i := Nat.le_of_not_lt hi
+  rw [P.fun_eq_ge this]
+  have hab : α a ≤ α b := by
+    refine hα ?_ ?_ I.le
+    · exact left_mem_Icc.mpr I.le
+    · exact right_mem_Icc.mpr I.le
+  rcases this.lt_or_eq with hlt | heq
+  · rw [P.fun_eq]
+    have : ¬i - 1 < P.n := Nat.not_lt.mpr (Nat.le_sub_one_of_lt hlt)
+    rw [dif_neg this, sub_self]
+  · subst heq
+    rw [P.fun_eq_ge₁ le_rfl, sub_self] -- ∎
+
+theorem α_telescope : ∑ i : Fin P.n, (α P[i] - α P[↑i - 1]) = α b - α a
+  := by --
+  let n := P.n
+  have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
+  have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
+  have : ∑ i : Fin n, (α P[i] - α P[↑i - 1]) = ∑ i : Fin n, (α (P i) - α (P (i - 1))) := by
+    simp only [h₁, h₂]
+  rw [this]
+  let φ (i : ℕ) : ℝ := α (P i) - α (P (i - 1))
+  change ∑ i : Fin n, φ i = α b - α a
+  rw [Fin.sum_univ_eq_sum_range]
+  rw [Finset.sum_range_sub₁]
+  rw [P.head_eq₂, P.tail_eq₂] -- ∎
+
 include hf hα in
 theorem L_le_U_same_P : L P f α ≤ U P f α
   := by --
@@ -58,6 +95,7 @@ include hf in
 theorem bdd_f_bdd_on_interval (i : ℕ) : BddOn f (P.interval i) := hf.mono (P.interval_subset i)
 
 include hf in
+@[deprecated m_le_M (since := "when")]
 theorem interval_sInf_le_sSup (i : ℕ) : sInf (f '' P.interval i) ≤ sSup (f '' P.interval i)
   := by --
   refine BddOn.sInf_le_sSup ?_
@@ -89,27 +127,6 @@ theorem sSup_interval_le_sSup_ab_f (i : ℕ) : sSup (f '' P.interval i) ≤ sSup
   refine csSup_le_csSup ?_ ?_ (image_mono <| P.interval_subset i)
   · exact hf.above'
   · exact (P.interval_nonempty i).image f -- ∎
-
-example {n : ℕ} {f : ℕ → ℝ} : ∑ i : Fin n, f i = ∑ i < n, f i := by
-  have : Finset.range n = Finset.Iio n := by
-    refine Finset.ext ?_
-    intro _
-    simp only [Finset.mem_range, Finset.mem_Iio]
-  rw [Fin.sum_univ_eq_sum_range, this]
-
-theorem α_telescope : ∑ i : Fin P.n, (α P[i] - α P[↑i - 1]) = α b - α a
-  := by --
-  let n := P.n
-  have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
-  have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
-  have : ∑ i : Fin n, (α P[i] - α P[↑i - 1]) = ∑ i : Fin n, (α (P i) - α (P (i - 1))) := by
-    simp only [h₁, h₂]
-  rw [this]
-  let φ (i : ℕ) : ℝ := α (P i) - α (P (i - 1))
-  change ∑ i : Fin n, φ i = α b - α a
-  rw [Fin.sum_univ_eq_sum_range]
-  rw [Finset.sum_range_sub₁]
-  rw [P.head_eq₂, P.tail_eq₂] -- ∎
 
 include hf hα in
 theorem L_bdd_below : BddBelow { L P f α | P : Partition I }

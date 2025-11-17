@@ -12,6 +12,7 @@ theorem mono : Monotone P
   let n := P.n
   refine monotone_nat_of_le_succ ?_
   intro k
+  simp only [P.fun_eq]
   if hk : k + 1 < n then
     rw [dif_pos hk, dif_pos (Nat.lt_of_succ_lt hk)]
     exact P.get_mono k.le_succ

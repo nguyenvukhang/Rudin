@@ -43,26 +43,34 @@ theorem idx_eq_b : P[P.n - 1]'(ℓₙ) = b
 theorem head_eq : P.head = a := List.head_of_mem_head? P.head'
 theorem head_eq₂ : P 0 = a
   := by --
-  dsimp only
-  rw [dif_pos ℓ₁]
+  rw [P.fun_eq, dif_pos ℓ₁]
   exact P.idx_eq_a -- ∎
 
 theorem tail_eq : P.tail = b := List.getLast_of_mem_getLast? P.tail'
 theorem tail_eq₂ : P (P.n - 1) = b
   := by --
-  dsimp only
-  rw [dif_pos ℓₙ]
+  rw [P.fun_eq, dif_pos ℓₙ]
   exact P.idx_eq_b -- ∎
 theorem tail_eq₃ {i : ℕ} (hi : P.n ≤ i) : P i = b
   := by --
-  dsimp only
-  rw [dif_neg hi.not_gt] -- ∎
+  rw [P.fun_eq, dif_neg hi.not_gt] -- ∎
 
 theorem mem_a₂ : a ∈ P.l := List.mem_of_mem_head? P.head'
 theorem mem_a : a ∈ P := List.mem_toFinset.mpr P.mem_a₂
 
 theorem mem_b₂ : b ∈ P.l := List.mem_of_getLast? P.tail'
 theorem mem_b : b ∈ P := List.mem_toFinset.mpr P.mem_b₂
+
+-- Funlike lemmas
+
+lemma fun_eq_lt {i : ℕ} (hi : i < P.n) : P i = P[i] := dif_pos hi
+lemma fun_eq_ge {i : ℕ} (hi : P.n ≤ i) : P i = b := dif_neg hi.not_gt
+lemma fun_eq_ge₁ {i : ℕ} (hi : P.n - 1 ≤ i) : P i = b
+  := by --
+  rcases hi.lt_or_eq with hlt | heq
+  · exact P.fun_eq_ge (Nat.le_of_pred_lt hlt)
+  · subst heq
+    exact P.tail_eq₂ -- ∎
 
 end Partition
 end Rudin

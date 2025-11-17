@@ -17,6 +17,11 @@ example {f : ℕ → ℝ} {n : ℕ} : ∑ i : Fin n, f i = ∑ i ∈ Finset.rang
   := by --
   exact Fin.sum_univ_eq_sum_range f n -- ∎
 
+theorem Finset.sum_Iio_eq_range {f : ℕ → ℝ} {n : ℕ} : ∑ i < n, f i = ∑ i ∈ Finset.range n, f i
+  := by --
+  rw [<-sum_fin]
+  exact Fin.sum_univ_eq_sum_range f n -- ∎
+
 example {f : ℕ → ℝ} {n : ℕ} : ∑ i ∈ Finset.range n, (f (i + 1) - f i) = f n - f 0
   := by --
   exact Finset.sum_range_sub f n -- ∎

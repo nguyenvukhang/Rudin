@@ -26,7 +26,7 @@ theorem mem_iff_mem_list : x ∈ P ↔ x ∈ P.l
 
 theorem mem_indexed {i : ℕ} : P i ∈ P
   := by --
-  dsimp only
+  rw [P.fun_eq]
   if hi : i < P.n then
     rw [dif_pos hi, P.mem_iff_mem_list]
     exact List.mem_of_getElem rfl
@@ -47,6 +47,7 @@ theorem mem_iff_x {x : ℝ} : x ∈ P ↔ ∃ i, P i = x
     obtain ⟨i, hi⟩ := hxP
     refine ⟨i, ?_⟩
     have : ↑i < P.n := i.is_lt
+    rw [P.fun_eq]
     simp only [↓reduceDIte, this]
     exact hi
   · intro ⟨i, heq⟩
@@ -66,7 +67,7 @@ theorem le_index_of_eq_b {i : ℕ} : P i = b → P.n - 1 ≤ i
   := by --
   contrapose!
   intro h
-  rw [dif_pos (Nat.lt_of_lt_pred h)]
+  rw [P.fun_eq, dif_pos (Nat.lt_of_lt_pred h)]
   conv => rhs; rw [<-P.idx_eq_b]
   exact (P.get_strictMono h).ne -- ∎
 

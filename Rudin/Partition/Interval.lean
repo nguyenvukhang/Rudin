@@ -8,7 +8,7 @@ namespace Partition
 /-- Each interval is non-empty. -/
 theorem interval_nonempty (i : ℕ) : (P.interval i).Nonempty
   := by --
-  dsimp only [Partition.interval]
+  dsimp only [Partition.interval, P.fun_eq]
   if hi : i < P.n then
     have : i - 1 < P.n := Nat.sub_lt_of_lt hi
     rw [dif_pos hi, dif_pos (Nat.sub_lt_of_lt hi), Set.nonempty_Icc]

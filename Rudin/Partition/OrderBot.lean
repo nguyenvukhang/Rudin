@@ -48,6 +48,7 @@ theorem eq_bot_iff₃ : P = ⊥ ↔ P 0 = a ∧ P 1 = b
   refine ⟨?_, ?_⟩
   · intro hP
     have hn : P.n = 2 := by subst hP; exact rfl
+    simp only [P.fun_eq]
     simp only [hn]
     rw [dif_pos zero_lt_two, dif_pos one_lt_two]
     refine ⟨?_, ?_⟩

@@ -20,6 +20,30 @@ lemma ℓ {i : Fin P.n} : i.val - 1 < P.n := Nat.sub_lt_of_lt i.is_lt
 noncomputable def U : ℝ := ∑ i : Fin P.n, M P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
 noncomputable def L : ℝ := ∑ i : Fin P.n, m P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
 
+theorem U_eq : U P f α = ∑ i ∈ Finset.range P.n, M P f i * (α (P i) - α (P (i - 1)))
+  := by --
+  let n := P.n
+  have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
+  have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
+  rw [Finset.sum_range]
+  simp only [h₁, h₂]
+  exact rfl -- ∎
+
+theorem L_eq : L P f α = ∑ i ∈ Finset.range P.n, m P f i * (α (P i) - α (P (i - 1)))
+  := by --
+  let n := P.n
+  have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
+  have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
+  rw [Finset.sum_range]
+  simp only [h₁, h₂]
+  exact rfl -- ∎
+
+theorem UL_eq : U P f α - L P f α =
+  ∑ i ∈ Finset.range P.n, (M P f i - m P f i) * (α (P i) - α (P (i - 1)))
+  := by --
+  rw [U_eq, L_eq, <-Finset.sum_sub_distrib]
+  simp only [<-sub_mul] -- ∎
+
 section Integrals
 
 variable (I : a < b) (f α : ℝ → ℝ)
@@ -29,6 +53,16 @@ noncomputable def Uι : ℝ := sInf { U P f α | P : Partition I }
 
 /-- Lower integral. -/
 noncomputable def Lι : ℝ := sSup { L P f α | P : Partition I }
+
+/-- Is a tag for a partition. -/
+def IsTag (t : ℕ → ℝ) : Prop := ∀ i, t i ∈ P.interval i
+
+lemma IsTag.n_le {t : ℕ → ℝ} (ht : IsTag P t) {i : ℕ} (h : P.n ≤ i) : t i = b
+  := by --
+  replace ht : t i ∈ Icc (P (i - 1)) (P i) := ht i
+  rw [P.fun_eq_ge₁ ((Nat.sub_le P.n 1).trans h)] at ht
+  rw [P.fun_eq_ge₁ (Nat.sub_le_sub_right h 1)] at ht
+  exact le_antisymm ht.2 ht.1 -- ∎
 
 theorem U_nonempty : { U P f α | P : Partition I }.Nonempty
   := by --
@@ -60,10 +94,9 @@ end Integrals
 
 end Globals
 
-theorem m_le_M (hf : BddOn f (Set.Icc a b)) (i : ℕ) : m P f i ≤ M P f i := by
-  replace hf : BddOn f (P.interval i) := hf.mono (P.interval_subset i)
-  refine Real.sInf_le_sSup (f '' (P.interval i)) ?_ ?_
-  · exact hf.below'
-  · exact hf.above'
+theorem m_le_M (hf : BddOn f (Set.Icc a b)) (i : ℕ) : m P f i ≤ M P f i
+  := by --
+  refine BddOn.sInf_le_sSup ?_
+  exact hf.mono (P.interval_subset i) -- ∎
 
 end Rudin

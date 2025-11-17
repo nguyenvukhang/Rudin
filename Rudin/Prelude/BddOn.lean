@@ -169,24 +169,31 @@ end RealValuedFunctions
 
 section ConditionallyCompleteLattice_lemmas
 
-variable [ConditionallyCompleteLattice R]
+variable [ConditionallyCompleteLattice R] {x : β}
 
 theorem BddOn.le_csSup (s : BddOn f A)
-  : ∀ x ∈ A, f x ≤ sSup (f '' A)
+  : x ∈ A → f x ≤ sSup (f '' A)
   := by --
-  intro x hx
+  intro hx
   have hx := Set.mem_image_of_mem f hx
   exact ConditionallyCompleteLattice.le_csSup (f '' A) (f x) s.above' hx -- ∎
 
-theorem BddOn.csSup_le {ε : R} (s : BddOn f A) (h : sSup (f '' A) ≤ ε)
-  : ∀ x ∈ A, f x ≤ ε
+theorem BddOn.csInf_le (s : BddOn f A)
+  : x ∈ A → sInf (f '' A) ≤ f x
   := by --
-  exact fun x hx => (s.le_csSup x hx).trans h -- ∎
+  intro hx
+  exact ConditionallyCompleteLattice.csInf_le (f '' A) (f x)
+    s.below' (Set.mem_image_of_mem f hx) -- ∎
+
+theorem BddOn.csSup_le {ε : R} (s : BddOn f A) (h : sSup (f '' A) ≤ ε)
+  : x ∈ A → f x ≤ ε
+  := by --
+  exact fun hx => (s.le_csSup hx).trans h -- ∎
 
 theorem BddOn.csSup_lt {ε : R} (s : BddOn f A) (h : sSup (f '' A) < ε)
-  : ∀ x ∈ A, f x < ε
+  : x ∈ A → f x < ε
   := by --
-  exact fun x hx => (s.le_csSup x hx).trans_lt h -- ∎
+  exact fun hx => (s.le_csSup hx).trans_lt h -- ∎
 
 theorem BddOn.csInf_le_csSup (s : BddOn f A) (hA : A.Nonempty) : sInf (f '' A) ≤ sSup (f '' A)
   := by --
