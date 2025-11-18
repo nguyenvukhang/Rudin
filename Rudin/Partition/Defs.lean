@@ -41,8 +41,8 @@ instance {I : a < b} : GetElem (Partition I) ℕ ℝ fun P i ↦ i < P.n where
 private theorem ℓb (P : Partition I) : P[P.n - 1]'(ℓₙ) = b
   := by --
   refine (List.getElem_eq_iff ℓₙ).mpr ?_
-  rw [<-P.tail', List.getLast?_eq_some_getLast ℓ₀, List.getElem?_eq_getElem ℓₙ]
-  exact congrArg some (List.getLast_eq_getElem ℓ₀).symm -- ∎
+  rw [<-P.tail']
+  exact List.getLast?_eq_getElem?.symm -- ∎
 
 /-- The recommended way of getting the value of the head, instead of
 `head'` in the definitions. -/
@@ -113,10 +113,34 @@ instance {I : a < b} : FunLike (Partition I) ℕ ℝ
       exact h
   } -- ∎
 
-lemma fun_eq (i : ℕ) : P i = if _ : i < P.n then P[i] else b := rfl
+lemma fn_eq (i : ℕ) : P i = if _ : i < P.n then P[i] else b := rfl
+
+-- Either both indexes are legit, or both are equal to b.
+lemma fn_eq₂ (i : ℕ) :
+  if h : i < P.n then P i = P[i] ∧ P (i - 1) = P[i - 1]
+  else                P i = b    ∧ P (i - 1) = b
+  := by --
+  rw [dite_prop_iff_and]
+  refine ⟨?_, ?_⟩
+  · intro h
+    refine ⟨?_, ?_⟩
+    · exact dif_pos h
+    · exact dif_pos (Nat.sub_lt_of_lt h)
+  · intro h
+    refine ⟨?_, ?_⟩
+    · exact dif_neg h
+    · rcases (Nat.le_of_not_lt h).lt_or_eq with hlt | heq
+      · exact dif_neg (Nat.le_sub_one_of_lt hlt).not_gt
+      · subst heq
+        rw [P.fn_eq, dif_pos ℓₙ]
+        refine (List.getElem_eq_iff ℓₙ).mpr ?_
+        rw [<-P.tail']
+        exact List.getLast?_eq_getElem?.symm -- ∎
 
 /-- The i-th interval. `[xᵢ₋₁, xᵢ]`. Valid ones go from `1` to `n - 1`. -/
 def interval (i : ℕ) : Set ℝ := Set.Icc (P (i - 1)) (P i)
+
+def Δ (α : ℝ → ℝ) (i : ℕ) : ℝ := α (P i) - α (P (i - 1))
 
 end Partition
 

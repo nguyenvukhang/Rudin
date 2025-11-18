@@ -15,33 +15,39 @@ variable (f α : ℝ → ℝ)
 noncomputable def M (i : ℕ) : ℝ := sSup (f '' P.interval i)
 noncomputable def m (i : ℕ) : ℝ := sInf (f '' P.interval i)
 
-lemma ℓ {i : Fin P.n} : i.val - 1 < P.n := Nat.sub_lt_of_lt i.is_lt
+private lemma ℓ {i : Fin P.n} : i.val - 1 < P.n := Nat.sub_lt_of_lt i.is_lt
 
-noncomputable def U : ℝ := ∑ i : Fin P.n, M P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
-noncomputable def L : ℝ := ∑ i : Fin P.n, m P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
+noncomputable def U : ℝ := ∑ i ∈ Finset.range P.n, M P f i * P.Δ α i
+noncomputable def L : ℝ := ∑ i ∈ Finset.range P.n, m P f i * P.Δ α i
 
-theorem U_eq : U P f α = ∑ i ∈ Finset.range P.n, M P f i * (α (P i) - α (P (i - 1)))
+lemma U_eq : U P f α = ∑ i ∈ Finset.range P.n, M P f i * (α (P i) - α (P (i - 1))) := rfl
+lemma L_eq : L P f α = ∑ i ∈ Finset.range P.n, m P f i * (α (P i) - α (P (i - 1))) := rfl
+
+-- Reassurances of legitness of definition.
+example : U P f α = ∑ i : Fin P.n, M P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
   := by --
   let n := P.n
   have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
   have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
+  dsimp only [U, Partition.Δ]
   rw [Finset.sum_range]
   simp only [h₁, h₂]
   exact rfl -- ∎
-
-theorem L_eq : L P f α = ∑ i ∈ Finset.range P.n, m P f i * (α (P i) - α (P (i - 1)))
+example : L P f α = ∑ i : Fin P.n, m P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
   := by --
   let n := P.n
   have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
   have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
+  dsimp only [L, Partition.Δ]
   rw [Finset.sum_range]
   simp only [h₁, h₂]
   exact rfl -- ∎
 
 theorem UL_eq : U P f α - L P f α =
-  ∑ i ∈ Finset.range P.n, (M P f i - m P f i) * (α (P i) - α (P (i - 1)))
+  ∑ i ∈ Finset.range P.n, (M P f i - m P f i) * P.Δ α i
   := by --
-  rw [U_eq, L_eq, <-Finset.sum_sub_distrib]
+  dsimp only [U, L]
+  rw [<-Finset.sum_sub_distrib]
   simp only [<-sub_mul] -- ∎
 
 section Integrals
@@ -60,8 +66,9 @@ def IsTag (t : ℕ → ℝ) : Prop := ∀ i, t i ∈ P.interval i
 lemma IsTag.n_le {t : ℕ → ℝ} (ht : IsTag P t) {i : ℕ} (h : P.n ≤ i) : t i = b
   := by --
   replace ht : t i ∈ Icc (P (i - 1)) (P i) := ht i
-  rw [P.fun_eq_ge₁ ((Nat.sub_le P.n 1).trans h)] at ht
-  rw [P.fun_eq_ge₁ (Nat.sub_le_sub_right h 1)] at ht
+  have h' := P.fn_eq₂ i
+  rw [dif_neg h.not_gt] at h'
+  rw [h'.1, h'.2] at ht
   exact le_antisymm ht.2 ht.1 -- ∎
 
 theorem U_nonempty : { U P f α | P : Partition I }.Nonempty
@@ -88,7 +95,22 @@ theorem L_nonempty : { L P f α | P : Partition I }.Nonempty
   rw [sub_self, mul_zero, zero_add]
   exact rfl -- ∎
 
+/-- A function is said to be Riemann-Stieltjes Integrable if its upper integral
+is equal to its lower integral. -/
 def RiemannStieltjesIntegrable : Prop := Uι I f α = Lι I f α
+
+scoped notation "∫" I "," f "d" α:70 => Uι I f α
+
+section RSI
+variable (h : RiemannStieltjesIntegrable I f α)
+
+set_option linter.unusedSectionVars false in
+include h in
+lemma RiemannStieltjesIntegrable.eq_U : ∫ I, f d α = Uι I f α := rfl
+include h in
+lemma RiemannStieltjesIntegrable.eq_L : ∫ I, f d α = Lι I f α := by rw [h]
+
+end RSI
 
 end Integrals
 

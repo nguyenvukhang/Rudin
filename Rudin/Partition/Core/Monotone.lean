@@ -11,7 +11,7 @@ theorem get_strictMono : StrictMono P.l.get
   exact P.sorted'.get_strictMono -- ∎
 
 @[deprecated get_strictMono (since := "when")]
-theorem idx_strictMono : StrictMono fun i : Fin P.n ↦ P[i]
+theorem strictMonoᵢ : StrictMono fun i : Fin P.n ↦ P[i]
   := by --
   exact P.sorted'.get_strictMono -- ∎
 
@@ -20,7 +20,7 @@ theorem get_mono : Monotone P.l.get
   exact P.get_strictMono.monotone -- ∎
 
 @[deprecated get_mono (since := "when")]
-theorem idx_mono : Monotone fun i : Fin P.n ↦ P[i]
+theorem monoᵢ : Monotone fun i : Fin P.n ↦ P[i]
   := by --
   exact P.get_strictMono.monotone -- ∎
 

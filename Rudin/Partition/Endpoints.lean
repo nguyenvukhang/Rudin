@@ -10,7 +10,7 @@ namespace Partition
 theorem min_a : ∀ x ∈ P, a ≤ x
   := by --
   intro x hx
-  rw [<-P.head_eq₂]
+  rw [P.a_eq]
   rw [P.mem_iff_x] at hx
   obtain ⟨i, hx⟩ : ∃ i, P i = x := hx
   subst hx
@@ -19,7 +19,7 @@ theorem min_a : ∀ x ∈ P, a ≤ x
 theorem max_b : ∀ x ∈ P, x ≤ b
   := by --
   intro x hx
-  rw [<-P.tail_eq₂]
+  rw [P.b_eq]
   obtain ⟨i, hi, heq⟩ := P.exists_fin_index_of_mem hx
   subst heq
   exact P.mono (Nat.le_sub_one_of_lt hi) -- ∎
@@ -49,8 +49,8 @@ theorem ofList : [a, b] ⊆ P.l
   intro x hx
   rw [List.mem_pair] at hx
   rcases hx with ha' | hb'
-  · subst ha'; exact P.mem_a₂
-  · subst hb'; exact P.mem_b₂ -- ∎
+  · subst ha'; exact P.mem_aᵢ
+  · subst hb'; exact P.mem_bᵢ -- ∎
 
 theorem ofFinset : {a, b} ⊆ P.l.toFinset
   := by --

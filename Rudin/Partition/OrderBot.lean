@@ -48,13 +48,13 @@ theorem eq_bot_iff₃ : P = ⊥ ↔ P 0 = a ∧ P 1 = b
   refine ⟨?_, ?_⟩
   · intro hP
     have hn : P.n = 2 := by subst hP; exact rfl
-    simp only [P.fun_eq]
+    simp only [P.fn_eq]
     simp only [hn]
     rw [dif_pos zero_lt_two, dif_pos one_lt_two]
     refine ⟨?_, ?_⟩
-    · exact P.idx_eq_a
+    · exact P.a_eqᵢ.symm
     · rw [hP₁ hn]
-      exact P.idx_eq_b
+      exact P.b_eqᵢ.symm
   · intro ⟨ha, hb⟩
     have : P.n ≤ 2 := by
       have := P.le_index_of_eq_b hb
@@ -66,13 +66,13 @@ theorem eq_bot_iff₃ : P = ⊥ ↔ P 0 = a ∧ P 1 = b
     if hi₀ : i = 0 then
       subst hi₀
       rw [List.getElem_cons_zero]
-      exact P.idx_eq_a
+      exact P.a_eqᵢ.symm
     else if hi₁ : i = 1 then
       subst hi₁
       rw [List.getElem_cons_succ, List.getElem_cons_zero]
       change P[1] = b
       rw [hP₁ hn]
-      exact P.idx_eq_b
+      exact P.b_eqᵢ.symm
     else
       have h₁ : 2 ≤ i := (Nat.two_le_iff i).mpr ⟨hi₀, hi₁⟩
       have h₂ : i < 2 := by rw [<-hn]; exact hi

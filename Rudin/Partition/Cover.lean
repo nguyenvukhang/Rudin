@@ -17,7 +17,7 @@ private lemma ℓ₀ (i : ℕ) : ⋃ j ≤ i, P.interval j = Set.Icc a (P i)
   | zero =>
     simp only [Nat.le_zero]
     rw [Set.iUnion_iUnion_eq_left]
-    exact congrArg (Set.Icc · (P 0)) P.head_eq₂
+    exact congrArg (Set.Icc · (P 0)) P.a_eq.symm
   | succ k ih =>
     rw [Set.biUnion_le] -- breaks up a union.
     simp only [Nat.lt_add_one_iff]
@@ -35,7 +35,7 @@ theorem iUnionEqTotal : ⋃ i < P.n, P.interval i = Set.Icc a b
   have h := ℓ₀ P (P.n - 1)
   simp only [Nat.le_sub_one_iff_lt P.len_pos] at h
   rw [h]
-  exact congrArg (Set.Icc a ·) P.tail_eq₂ -- ∎
+  exact congrArg (Set.Icc a ·) P.b_eq.symm -- ∎
 
 theorem cover {x : ℝ} : x ∈ Set.Icc a b → ∃ i < P.n, ↑x ∈ P.interval i
   := by --

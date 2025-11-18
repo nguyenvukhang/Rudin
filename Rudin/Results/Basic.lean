@@ -2,6 +2,7 @@ import Rudin.Axioms
 import Rudin.Prelude
 import Rudin.Partition
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+import Rudin.Alpha
 
 open Set
 
@@ -11,57 +12,10 @@ variable {a b : ℝ} {I : a < b} {P P' P₁ P₂ : Partition I} {f α : ℝ → 
   (hf : BddOn f (Icc a b))
   (hα : MonotoneOn α (Icc a b))
 
-include hα in
-theorem α_nonneg (i : Fin P.n) : (0 : ℝ) ≤ α P[i] - α P[↑i - 1]
-  := by --
-  rw [sub_nonneg]
-  refine hα ?_ ?_ ?_
-  · exact P.mem_principal _
-  · exact P.mem_principal_fin
-  · exact P.get_mono (Nat.sub_le i 1) -- ∎
-
-include hα in
-theorem α_nonneg₂ (P : Partition I) (i : ℕ) : (0 : ℝ) ≤ α (P i) - α (P (i - 1))
-  := by --
-  if hi : i < P.n then
-    have : P i = P[i] := by rw [P.fun_eq, dif_pos hi]
-    rw [this]
-    have : i - 1 < P.n := Nat.sub_lt_of_lt hi
-    rw [P.fun_eq_lt this]
-    exact α_nonneg hα ⟨i, hi⟩
-  else
-  have : P.n ≤ i := Nat.le_of_not_lt hi
-  rw [P.fun_eq_ge this]
-  have hab : α a ≤ α b := by
-    refine hα ?_ ?_ I.le
-    · exact left_mem_Icc.mpr I.le
-    · exact right_mem_Icc.mpr I.le
-  rcases this.lt_or_eq with hlt | heq
-  · rw [P.fun_eq]
-    have : ¬i - 1 < P.n := Nat.not_lt.mpr (Nat.le_sub_one_of_lt hlt)
-    rw [dif_neg this, sub_self]
-  · subst heq
-    rw [P.fun_eq_ge₁ le_rfl, sub_self] -- ∎
-
-theorem α_telescope : ∑ i : Fin P.n, (α P[i] - α P[↑i - 1]) = α b - α a
-  := by --
-  let n := P.n
-  have h₁ (i : Fin n) : P i = P[i] := Partition.ieq.idx_fin P
-  have h₂ (i : Fin n) : P (i - 1) = P[↑i - 1] := Partition.ieq.idx_cond P _
-  have : ∑ i : Fin n, (α P[i] - α P[↑i - 1]) = ∑ i : Fin n, (α (P i) - α (P (i - 1))) := by
-    simp only [h₁, h₂]
-  rw [this]
-  let φ (i : ℕ) : ℝ := α (P i) - α (P (i - 1))
-  change ∑ i : Fin n, φ i = α b - α a
-  rw [Fin.sum_univ_eq_sum_range]
-  rw [Finset.sum_range_sub₁]
-  rw [P.head_eq₂, P.tail_eq₂] -- ∎
-
 include hf hα in
 theorem L_le_U_same_P : L P f α ≤ U P f α
   := by --
-  let g (i : Fin P.n) := α P[i] - α P[i.val - 1]
-  have (i : Fin P.n) : m P f i * g i ≤ M P f i * g i := by
+  have (i : ℕ) : m P f i * P.Δ α i ≤ M P f i * P.Δ α i := by
     refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα i)
     exact m_le_M P hf i
   exact Finset.sum_le_sum fun i _ ↦ this i -- ∎
@@ -135,9 +89,6 @@ theorem L_bdd_below : BddBelow { L P f α | P : Partition I }
   use y * (α b - α a)
   intro val ⟨P, heq⟩
   subst heq
-  dsimp only [L, m]
-  let n := P.n
-  let g (i : Fin n) := α P[i] - α P[i.val - 1]
 
   have : y ≤ sInf (f '' Icc a b) := by
     refine le_csInf ?_ ?_
@@ -146,7 +97,8 @@ theorem L_bdd_below : BddBelow { L P f α | P : Partition I }
       subst heq
       exact hy ⟨x, hx, rfl⟩
 
-  have : ∑ i : Fin n, y * g i ≤ ∑ i : Fin n, sInf (f '' P.interval ↑i) * g i := by
+  have : ∑ i ∈ Finset.range P.n, y * P.Δ α i ≤
+    ∑ i ∈ Finset.range P.n, sInf (f '' P.interval ↑i) * P.Δ α i := by
     refine Finset.sum_le_sum ?_
     intro i _
     refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα i)
@@ -164,9 +116,6 @@ theorem U_bdd_above : BddAbove { U P f α | P : Partition I }
   use y * (α b - α a)
   intro val ⟨P, heq⟩
   subst heq
-  dsimp only [U, M]
-  let n := P.n
-  let g (i : Fin n) := α P[i] - α P[i.val - 1]
 
   have : sSup (f '' Icc a b) ≤ y := by
     refine csSup_le ?_ ?_
@@ -175,7 +124,8 @@ theorem U_bdd_above : BddAbove { U P f α | P : Partition I }
       subst heq
       exact hy ⟨x, hx, rfl⟩
 
-  have : ∑ i : Fin n, sSup (f '' P.interval ↑i) * g i ≤ ∑ i : Fin n, y * g i := by
+  have : ∑ i ∈ Finset.range P.n, sSup (f '' P.interval ↑i) * P.Δ α i
+    ≤ ∑ i ∈ Finset.range P.n, y * P.Δ α i := by
     refine Finset.sum_le_sum ?_
     intro i _
     refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα i)

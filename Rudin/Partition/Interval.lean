@@ -8,7 +8,7 @@ namespace Partition
 /-- Each interval is non-empty. -/
 theorem interval_nonempty (i : ℕ) : (P.interval i).Nonempty
   := by --
-  dsimp only [Partition.interval, P.fun_eq]
+  dsimp only [Partition.interval, P.fn_eq]
   if hi : i < P.n then
     have : i - 1 < P.n := Nat.sub_lt_of_lt hi
     rw [dif_pos hi, dif_pos (Nat.sub_lt_of_lt hi), Set.nonempty_Icc]
@@ -27,7 +27,7 @@ theorem interval_nonempty (i : ℕ) : (P.interval i).Nonempty
       rw [heq]
       exact Nat.sub_one_lt_of_lt this
     rw [dif_pos this, Set.nonempty_Icc]
-    conv => rhs; rw [<-P.idx_eq_b]
+    conv => rhs; rw [P.b_eqᵢ]
     refine P.get_mono ?_
     subst heq
     exact le_rfl -- ∎
@@ -41,22 +41,11 @@ theorem interval_subset (i : ℕ) : P.interval i ⊆ Set.Icc a b
   · exact ha.trans hx₀
   · exact hx₁.trans hb -- ∎
 
-theorem mem_principal_fin {i : Fin P.n} : P[i] ∈ Set.Icc a b
+theorem mem_principalᵢ (i : Fin P.n) : P[i] ∈ Set.Icc a b
   := by --
   refine ⟨?_, ?_⟩
-  · exact P.min_a P[i] P.mem_indexed_fin
-  · exact P.max_b P[i] P.mem_indexed_fin -- ∎
-
-theorem mem_principal {i : ℕ} (hi : i < P.n) : P[i] ∈ Set.Icc a b
-  := by --
-  refine ⟨?_, ?_⟩
-  · refine P.min_a P[i] ?_
-    rw [P.mem_iff_mem_list]
-    exact List.mem_of_getElem rfl
-  · refine P.max_b P[i] ?_
-    rw [P.mem_iff_mem_list]
-    exact List.mem_of_getElem rfl -- ∎
-
+  · exact P.min_a P[i] P.mem_indexedᵢ
+  · exact P.max_b P[i] P.mem_indexedᵢ -- ∎
 
 end Partition
 end Rudin
