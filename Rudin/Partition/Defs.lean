@@ -142,6 +142,73 @@ def interval (i : ℕ) : Set ℝ := Set.Icc (P (i - 1)) (P i)
 
 def Δ (α : ℝ → ℝ) (i : ℕ) : ℝ := α (P i) - α (P (i - 1))
 
+section OfFunction
+variable {n : ℕ} {f : ℕ → ℝ} (I : a < b)
+  (hf : StrictMonoOn f (Finset.range n))
+  (ha : f 0 = a) (hb : f (n - 1) = b)
+
+/-- Create a partition from a function. -/
+def ofFn : Partition I
+  := by --
+  have hn₂ : 2 ≤ n := by
+    by_contra! hn
+    have : n - 1 ≤ 0 := Nat.sub_le_of_le_add (Nat.le_of_lt_succ hn)
+    have : n - 1 = 0 := Nat.eq_zero_of_le_zero this
+    rw [this] at hb
+    rw [ha] at hb
+    exact hb.not_lt I
+  let l := List.ofFn (n := n) (f ·)
+  have hl_length : l.length = n := List.length_ofFn
+  have hl_length_le : 2 ≤ l.length := by rw [List.length_ofFn]; exact hn₂
+  have hl₀ : l ≠ [] := List.ne_nil_of_length_pos (zero_lt_two.trans_le hl_length_le)
+  have hl₀ : l ≠ [] := by
+    refine List.ne_nil_of_length_pos ?_
+    rw [hl_length]
+    exact zero_lt_two.trans_le hn₂
+  have haᵢ : l[0] = a := by
+    dsimp only [l]
+    rw [List.getElem_ofFn]
+    exact ha
+  have hbᵢ : l[l.length - 1] = b := by
+    dsimp only [l]
+    rw [List.getElem_ofFn]
+    simp only [List.length_ofFn]
+    exact hb
+  refine {
+    l
+    head' := by
+      rw [<-haᵢ]
+      refine (List.head_eq_iff_head?_eq_some hl₀).mp ?_
+      exact List.head_eq_getElem hl₀
+    tail' := by
+      rw [<-hbᵢ]
+      refine (List.getLast_eq_iff_getLast?_eq_some hl₀).mp ?_
+      exact List.getLast_eq_getElem hl₀
+    sorted' := by
+      rw [List.Sorted, List.pairwise_iff_get]
+      intro i j hij
+      dsimp only [l]
+      simp only [List.get_eq_getElem, List.getElem_ofFn]
+      refine hf ?_ ?_ hij
+      · refine Finset.mem_coe.mpr (Finset.mem_range.mpr ?_)
+        exact lt_of_lt_of_eq i.is_lt hl_length
+      · refine Finset.mem_coe.mpr (Finset.mem_range.mpr ?_)
+        exact lt_of_lt_of_eq j.is_lt hl_length
+  } -- ∎
+
+example : (ofFn I hf ha hb).l = List.ofFn (n := n) (f ·) := rfl
+theorem ofFn_eq_l : (ofFn I hf ha hb).l = List.ofFn (n := n) (f ·) := rfl
+theorem ofFn_eq_n : (ofFn I hf ha hb).n = n := List.length_ofFn
+theorem ofFn_eq_f {i : ℕ} (hi : i < n) : (ofFn I hf ha hb) i = f i := by
+  let P := ofFn I hf ha hb
+  change (if _ : i < P.n then P[i] else b) = f i
+  have : P.n = n := List.length_ofFn
+  have : i < P.n := by rw [this]; exact hi
+  rw [dif_pos this]
+  exact List.getElem_ofFn this
+
+end OfFunction
+
 end Partition
 
 end Rudin

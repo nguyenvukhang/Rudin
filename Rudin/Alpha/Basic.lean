@@ -1,7 +1,4 @@
-import Rudin.Axioms
-import Rudin.Prelude
-import Rudin.Partition
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+import Rudin.Defs
 
 open Set
 
@@ -32,7 +29,7 @@ theorem α_nonneg (i : ℕ) : (0 : ℝ) ≤ α (P i) - α (P (i - 1))
     rw [h.1, h.2, sub_self] -- ∎
 
 include hα in
-lemma Partition.Δ_nonneg (i : ℕ) : (0 : ℝ) ≤ P.Δ α i
+lemma Partition.Δ_nonneg (P : Partition I) (i : ℕ) : (0 : ℝ) ≤ P.Δ α i
   := by --
   exact α_nonneg hα i -- ∎
 
@@ -53,5 +50,43 @@ private lemma α_telescopeᵢ : ∑ i : Fin P.n, (α P[i] - α P[↑i - 1]) = α
 theorem α_telescope : ∑ i ∈ Finset.range P.n, (α (P i) - α (P (i - 1))) = α b - α a
   := by --
   rw [Finset.sum_range_sub₁, <-P.a_eq, <-P.b_eq] -- ∎
+
+include hα in
+lemma α_sub_nonneg (h : a ≤ b) : 0 ≤ α b - α a
+  := by --
+  rw [sub_nonneg]
+  exact hα (left_mem_Icc.mpr h) (right_mem_Icc.mpr h) h -- ∎
+
+include hα in
+theorem α_trivial_Δ (h : α a = α b) (i : ℕ) : P.Δ α i = 0
+  := by --
+  have (P : Partition I) (i : ℕ) : α (P i) = α a := by
+    refine le_antisymm ?_ ?_
+    · rw [h]
+      refine hα ?_ ?_ ?_
+      · exact P.mem_Icc i
+      · exact right_mem_Icc.mpr I.le
+      · exact P.max_b₂ i
+    · refine hα ?_ ?_ ?_
+      · exact left_mem_Icc.mpr I.le
+      · exact P.mem_Icc i
+      · exact P.min_a₂ i
+  dsimp only [Partition.Δ]
+  rw [this P i, this P (i - 1)]
+  exact sub_self (α a) -- ∎
+
+include hα in
+theorem α_trivial_U (h : α a = α b) : U P f α = 0
+  := by --
+  dsimp only [U]
+  simp only [α_trivial_Δ hα h, mul_zero]
+  exact Finset.sum_const_zero -- ∎
+
+include hα in
+theorem α_trivial_L (h : α a = α b) : L P f α = 0
+  := by --
+  dsimp only [L]
+  simp only [α_trivial_Δ hα h, mul_zero]
+  exact Finset.sum_const_zero -- ∎
 
 end Rudin

@@ -1,9 +1,16 @@
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Real.Basic
 
+universe u
+
 variable {l : List ℝ} {x : ℝ}
 
 namespace List
+
+theorem mem_orderedInsert_self {α : Type u} (r : α → α → Prop)
+  [DecidableRel r] {a : α} {l : List α} : a ∈ orderedInsert r a l
+  := by --
+  exact (mem_orderedInsert r).mpr (Or.inl rfl) -- ∎
 
 theorem Sorted.orderedInsert_eq (hl : (x :: l).Sorted (· ≤ ·))
   : l.orderedInsert (· ≤ ·) x = x :: l
@@ -93,48 +100,104 @@ theorem Sorted.orderedInsert_sorted_lt (hlt : l.Sorted (· < ·)) (hx : x ∉ l)
     exact (hlt.get_strictMono hij).ne
   exact h₁.lt_of_le (h₀.orderedInsert hx) -- ∎
 
-example : ∃ k : Fin (l.orderedInsert (· ≤ ·) x).length,
-  ∀ i, (hi : i < k) →
-  haveI : i < l.length := by
-    suffices i + 1 < l.length + 1 by exact Nat.succ_lt_succ_iff.mp this
-    rw [<-l.orderedInsert_length (· ≤ ·) x]
-    refine k.is_lt.trans_le' hi
-  l[i] = (l.orderedInsert (· ≤ ·) x)[i] := by
-  let le : ℝ → ℝ → Prop := (· ≤ ·)
-  let l' := l.orderedInsert le x
-  have hxl' : x ∈ l' := (mem_orderedInsert le).mpr (Or.inl rfl)
-  obtain ⟨k, hk⟩ := mem_iff_get.mp hxl'
-  use k
-  intro i hik
-  have hi : i < l.length := by
-    suffices i + 1 < l.length + 1 by exact Nat.succ_lt_succ_iff.mp this
-    rw [<-l.orderedInsert_length (· ≤ ·) x]
-    refine k.is_lt.trans_le' hik
-  induction l with
+-- main: List.getElem_cons_succ
+private lemma ℓ₁ {y : ℝ} {ys : List ℝ} {i : ℕ} (hi₀ : 0 < i) (hi : i < (y :: ys).length) :
+  haveI : i - 1 < ys.length := Nat.sub_lt_right_of_lt_add hi₀ hi
+  (y :: ys)[i] = ys[i - 1]
+  := by --
+  induction i with
+  | zero =>
+    refine False.elim ?_
+    exact Nat.not_succ_le_zero 0 hi₀
+  | succ k ih =>
+    simp only [getElem_cons_succ, add_tsub_cancel_right] -- ∎
+
+theorem orderedInsert_leᵢ (hl : l.Sorted (· < ·))
+  (hx : x ∉ l) {i : ℕ} (hi : i < l.length) :
+  haveI : i < (l.orderedInsert (· ≤ ·) x).length := by
+    rw [orderedInsert_length]
+    exact Nat.lt_add_right 1 hi
+  l[i] ≤ x → l[i] = (l.orderedInsert (· ≤ ·) x)[i]
+  := by --
+  intro hle
+  induction l generalizing i with
   | nil =>
     exact False.elim (Nat.not_succ_le_zero i hi)
   | cons y ys ih =>
-    simp only [orderedInsert.eq_2, orderedInsert]
-    have : x ∈ ys := by
-      sorry
+    simp only [orderedInsert]
+    have : y < x := by
+      have : y ≤ (y :: ys)[i] := by
+        change (y :: ys)[0] ≤ (y :: ys)[i]
+        exact hl.le_of_lt.get_mono (Nat.zero_le i)
+      exact (this.trans hle).lt_of_ne' (ne_of_not_mem_cons hx)
+    simp only [↓reduceIte, this.not_ge]
+    if hi₀ : i = 0 then subst hi₀; simp only [getElem_cons_zero] else
+    have hi₁ : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero hi₀
+    -- idea: use induction hypothesis with i - 1
+    have hxys : x ∉ ys := not_mem_of_not_mem_cons hx
+    have : i - 1 < ys.length := by
+      refine Nat.sub_one_lt_of_le ?_ ?_
+      · exact Nat.zero_lt_of_ne_zero hi₀
+      · exact Nat.le_of_lt_succ hi
+    specialize ih hl.of_cons hxys this
+    have heqᵢ := ℓ₁ (Nat.zero_lt_of_ne_zero hi₀) hi
+    rw [heqᵢ] at hle
+    specialize ih hle
+    rw [heqᵢ, ih]
+    refine (ℓ₁ ?_ _).symm
+    exact Nat.zero_lt_of_ne_zero hi₀ -- ∎
+
+theorem orderedInsert_geᵢ (hl : l.Sorted (· < ·))
+  (hx : x ∉ l) {i : ℕ} (hi : i < l.length) :
+  haveI : i + 1 < (l.orderedInsert (· ≤ ·) x).length := by
+    rw [orderedInsert_length]
+    exact Nat.add_lt_add_right hi 1
+  x ≤ l[i] → l[i] = (l.orderedInsert (· ≤ ·) x)[i + 1]
+  := by --
+  intro hge
+  induction l generalizing i with
+  | nil =>
+    exact False.elim (Nat.not_succ_le_zero i hi)
+  | cons y ys ih =>
+    simp only [orderedInsert]
     if hxy : x ≤ y then
       simp only [↓reduceIte, hxy]
-      sorry
+      exact rfl
     else
       simp only [↓reduceIte, hxy]
-      sorry
+      replace hxy : y < x := lt_of_not_ge hxy
+      if hi₀ : i = 0 then subst hi₀; exact False.elim (hxy.not_ge hge) else
+      have : i - 1 < ys.length := by
+        refine Nat.sub_one_lt_of_le ?_ ?_
+        · exact Nat.zero_lt_of_ne_zero hi₀
+        · exact Nat.le_of_lt_succ hi
+      specialize ih hl.of_cons (not_mem_of_not_mem_cons hx) this
+      have heqᵢ := ℓ₁ (Nat.zero_lt_of_ne_zero hi₀) hi
+      have : x ≤ ys[i - 1] := le_of_le_of_eq hge heqᵢ
+      specialize ih this
+      have hi_sub : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero hi₀
+      simp only [hi_sub] at ih
+      rw [heqᵢ]
+      exact ih -- ∎
 
-example : ∃ k : Fin l.length,
-  ∀ i, (hi : i < k) →
-  haveI : i < (l.orderedInsert (· ≤ ·) x).length := by
-    rw [l.orderedInsert_length (· ≤ ·) x]
-    exact (Nat.lt_add_right 1 k.is_lt).trans' hi
-  l[i] = (l.orderedInsert (· ≤ ·) x)[i] := by
-  let le : ℝ → ℝ → Prop := (· ≤ ·)
-  let l' := l.orderedInsert le x
-  have hxl' : x ∈ l' := (mem_orderedInsert le).mpr (Or.inl rfl)
-  obtain ⟨k, hk⟩ := mem_iff_get.mp hxl'
-  -- intro i hik
-  sorry
+example (hl : l.Sorted (· < ·))
+  (hx : x ∉ l) {i : ℕ} (hi : i < l.length) :
+  haveI : i + 1 < (l.orderedInsert (· ≤ ·) x).length := by
+    rw [orderedInsert_length]
+    exact Nat.succ_lt_succ hi
+  l[i] = if l[i] ≤ x then
+    (l.orderedInsert (· ≤ ·) x)[i]
+  else
+    (l.orderedInsert (· ≤ ·) x)[i + 1]
+  := by --
+  rcases le_total l[i] x with hle | hge
+  · simp only [↓reduceIte, hle]
+    exact orderedInsert_leᵢ hl hx hi hle
+  · have : ¬l[i] ≤ x := by
+      refine not_le_of_gt (hge.lt_of_ne' ?_)
+      contrapose! hx
+      exact mem_of_getElem hx
+    simp only [↓reduceIte, this]
+    exact orderedInsert_geᵢ hl hx hi hge -- ∎
 
 end List

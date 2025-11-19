@@ -1,7 +1,10 @@
 import Rudin.Partition.Endpoints
+import Rudin.Prelude
+
+open Set
 
 namespace Rudin
-variable {a b : ℝ} {I : a < b} (P : Partition I)
+variable {a b : ℝ} {I : a < b} (P : Partition I) {f : ℝ → ℝ}
 
 namespace Partition
 
@@ -32,7 +35,7 @@ theorem interval_nonempty (i : ℕ) : (P.interval i).Nonempty
     subst heq
     exact le_rfl -- ∎
 
-theorem interval_subset (i : ℕ) : P.interval i ⊆ Set.Icc a b
+theorem interval_subset (i : ℕ) : P.interval i ⊆ Icc a b
   := by --
   rintro x ⟨hx₀ : P (i - 1) ≤ x, hx₁ : x ≤ P i⟩
   have ha : a ≤ P (i - 1) := P.min_a₂ (i - 1)
@@ -41,11 +44,16 @@ theorem interval_subset (i : ℕ) : P.interval i ⊆ Set.Icc a b
   · exact ha.trans hx₀
   · exact hx₁.trans hb -- ∎
 
-theorem mem_principalᵢ (i : Fin P.n) : P[i] ∈ Set.Icc a b
+theorem mem_principalᵢ (i : Fin P.n) : P[i] ∈ Icc a b
   := by --
   refine ⟨?_, ?_⟩
   · exact P.min_a P[i] P.mem_indexedᵢ
   · exact P.max_b P[i] P.mem_indexedᵢ -- ∎
+
+theorem interval_bdd_on (hf : BddOn f (Icc a b)) (i : ℕ)
+  : BddOn f (P.interval i)
+  := by --
+  exact hf.mono (P.interval_subset i) -- ∎
 
 end Partition
 end Rudin

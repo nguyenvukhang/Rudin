@@ -42,6 +42,10 @@ theorem max_b₂ : ∀ i, P i ≤ b
   intro i
   exact P.max_b (P i) P.mem_indexed -- ∎
 
+theorem mem_Icc (i : ℕ) : P i ∈ Set.Icc a b
+  := by --
+  exact ⟨P.min_a₂ i, P.max_b₂ i⟩ -- ∎
+
 namespace ab
 
 theorem ofList : [a, b] ⊆ P.l

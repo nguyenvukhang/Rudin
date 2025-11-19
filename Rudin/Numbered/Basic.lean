@@ -1,4 +1,5 @@
 import Rudin.Results.IsTag
+import Rudin.Partition
 
 open Set
 
@@ -82,5 +83,85 @@ theorem Theorem._6._7._c (hrsi : RiemannStieltjesIntegrable I f α) (ε : ℝ) :
   · exact hU
   · exact hL'
   · exact hU' -- ∎
+
+include hα in
+theorem Theorem._6._8 (hf_cont : ContinuousOn f (Icc a b))
+  : RiemannStieltjesIntegrable I f α
+  := by --
+  have hab : IsCompact (Icc a b) := isCompact_Icc
+  have hf_ucont : UniformContinuousOn f (Icc a b) :=
+    hab.uniformContinuousOn_of_continuous hf_cont
+  have hf : BddOn f (Icc a b) := {
+    below' := hab.bddBelow_image hf_cont
+    above' := hab.bddAbove_image hf_cont
+  }
+  rw [RiemannStieltjesIntegrable.iff hf hα]
+  intro ε hε
+  if hα₀ : α b - α a = 0 then
+    have hα₀ : α a = α b := by rw [sub_eq_zero] at hα₀; exact hα₀.symm
+    use ⊥
+    rw [α_trivial_U hα hα₀, α_trivial_L hα hα₀, sub_self]
+    exact hε
+  else
+
+  have hα₀ : 0 < α b - α a := (α_sub_nonneg hα I.le).lt_of_ne' hα₀
+  have : 0 < ε / (α b - α a) := div_pos hε hα₀
+  obtain ⟨η, hη₀, hη : η < ε / (α b - α a)⟩ := exists_between (div_pos hε hα₀)
+  have hηε : (α b - α a) * η < ε := by
+    if h₀ : α b - α a = 0 then rw [h₀, zero_mul]; exact hε else
+    exact (lt_div_iff₀' hα₀).mp hη
+  rw [Metric.uniformContinuousOn_iff] at hf_ucont
+  specialize hf_ucont η hη₀
+  obtain ⟨δ, hδ, hf_ucont⟩ := hf_ucont
+  change ∀ x ∈ Icc a b, ∀ t ∈ Icc a b, |x - t| < δ → |f x - f t| < η at hf_ucont
+  obtain ⟨P, hP⟩ := Partition.exists_lt I hδ
+  use P
+  rw [UL_eq]
+  have (i : ℕ) : ∀ y₁ ∈ f '' P.interval i, y₁ - m P f i ≤ η := by
+    intro y₁ hy₁
+    dsimp only [m]
+    have h₀ := (P.interval_nonempty i).image f
+    have h₁ := (P.interval_bdd_on hf i).below'
+    rw [sInf.sub_set h₀ h₁]
+    refine csSup_le ?_ ?_
+    · obtain ⟨x, hx⟩ := h₀
+      exact ⟨y₁ - x, x, hx, rfl⟩
+    · intro z ⟨y₂, hy₂, heq⟩
+      subst heq
+      refine le_of_lt ?_
+      refine lt_of_abs_lt ?_
+      obtain ⟨x, hx, heq⟩ := hy₁
+      subst heq
+      obtain ⟨t, ht, heq⟩ := hy₂
+      subst heq
+      apply hf_ucont
+      · exact (P.interval_subset i) hx
+      · exact (P.interval_subset i) ht
+      · refine (hP i).trans_le' ?_
+        refine .trans ?_ (le_abs_self _)
+        exact abs_sub_le_of_le_of_le hx.1 hx.2 ht.1 ht.2
+  have (i : ℕ) : M P f i - m P f i ≤ η := by
+    dsimp only [M]
+    have h₀ := (P.interval_nonempty i).image f
+    have h₁ := (P.interval_bdd_on hf i).above'
+    rw [sSup.set_sub h₀ h₁]
+    refine csSup_le ?_ ?_
+    · obtain ⟨x, hx⟩ := h₀
+      exact ⟨x - m P f i, x, hx, rfl⟩
+    · intro y ⟨x, hx, heq⟩
+      subst heq
+      exact this i x hx
+  have (i : ℕ) : (M P f i - m P f i) * P.Δ α i ≤ η * P.Δ α i := by
+    refine mul_le_mul_of_nonneg_right ?_ (P.Δ_nonneg hα i)
+    exact this i
+  have : ∑ i ∈ Finset.range P.n, (M P f i - m P f i) * P.Δ α i ≤
+    ∑ i ∈ Finset.range P.n, η * P.Δ α i := by
+    exact Finset.sum_le_sum fun i _ ↦ this i
+  refine this.trans_lt ?_
+  rw [<-Finset.mul_sum]
+  dsimp only [Partition.Δ]
+  rw [α_telescope]
+  rw [mul_comm]
+  exact hηε -- ∎
 
 end Rudin

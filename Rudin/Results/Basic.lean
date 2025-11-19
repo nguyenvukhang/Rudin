@@ -1,8 +1,5 @@
-import Rudin.Axioms
-import Rudin.Prelude
-import Rudin.Partition
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Rudin.Alpha
+import Rudin.Axioms
 
 open Set
 
