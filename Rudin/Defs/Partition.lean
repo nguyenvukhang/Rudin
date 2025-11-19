@@ -1,7 +1,5 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Data.Real.Basic
 
 variable {a b : ℝ}
 

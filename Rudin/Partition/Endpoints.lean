@@ -46,6 +46,11 @@ theorem mem_Icc (i : ℕ) : P i ∈ Set.Icc a b
   := by --
   exact ⟨P.min_a₂ i, P.max_b₂ i⟩ -- ∎
 
+theorem subset_Icc : (P : Set ℝ) ⊆ Set.Icc a b
+  := by --
+  intro x hx
+  exact ⟨P.min_a x hx, P.max_b x hx⟩ -- ∎
+
 namespace ab
 
 theorem ofList : [a, b] ⊆ P.l

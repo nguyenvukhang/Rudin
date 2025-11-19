@@ -1,4 +1,4 @@
-import Rudin.Partition.Defs
+import Rudin.Defs.Partition
 import Rudin.Partition.Core.Endpoints
 import Rudin.Partition.Core.Monotone
 

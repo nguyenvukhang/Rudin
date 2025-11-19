@@ -1,5 +1,4 @@
--- import Rudin.Partition.Core.Length
-import Rudin.Partition.Defs
+import Rudin.Defs.Partition
 
 open Set
 

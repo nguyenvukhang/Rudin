@@ -4,8 +4,9 @@ import Rudin.Partition.Core.Index
 import Rudin.Partition.Core.Length
 import Rudin.Partition.Core.Monotone
 import Rudin.Partition.Cover
-import Rudin.Partition.Defs
 import Rudin.Partition.Endpoints
+import Rudin.Partition.Extend
+import Rudin.Partition.Globals
 import Rudin.Partition.Insert
 import Rudin.Partition.Interval
 import Rudin.Partition.Monotone

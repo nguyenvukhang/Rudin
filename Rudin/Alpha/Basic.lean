@@ -1,4 +1,4 @@
-import Rudin.Defs
+import Rudin.Lemmas.Globals
 
 open Set
 

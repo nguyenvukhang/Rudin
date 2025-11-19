@@ -1,4 +1,4 @@
-import Rudin.Prelude
+import Rudin.Defs.Globals
 import Rudin.Partition.Interval
 import Rudin.Partition.OrderBot
 
@@ -8,20 +8,19 @@ namespace Rudin
 
 variable {a b : ℝ} {I : a < b} (P : Partition I)
 
+theorem m_le_M (hf : BddOn f (Icc a b)) (i : ℕ) : m P f i ≤ M P f i
+  := by --
+  refine BddOn.sInf_le_sSup ?_
+  exact hf.mono (P.interval_subset i) -- ∎
+
 section Globals
 
 variable (f α : ℝ → ℝ)
 
-noncomputable def M (i : ℕ) : ℝ := sSup (f '' P.interval i)
-noncomputable def m (i : ℕ) : ℝ := sInf (f '' P.interval i)
-
-private lemma ℓ {i : Fin P.n} : i.val - 1 < P.n := Nat.sub_lt_of_lt i.is_lt
-
-noncomputable def U : ℝ := ∑ i ∈ Finset.range P.n, M P f i * P.Δ α i
-noncomputable def L : ℝ := ∑ i ∈ Finset.range P.n, m P f i * P.Δ α i
-
 lemma U_eq : U P f α = ∑ i ∈ Finset.range P.n, M P f i * (α (P i) - α (P (i - 1))) := rfl
 lemma L_eq : L P f α = ∑ i ∈ Finset.range P.n, m P f i * (α (P i) - α (P (i - 1))) := rfl
+
+private lemma ℓ {i : Fin P.n} : i.val - 1 < P.n := Nat.sub_lt_of_lt i.is_lt
 
 -- Reassurances of legitness of definition.
 example : U P f α = ∑ i : Fin P.n, M P f i * (α (P[i]) - α (P[i.val - 1]'(ℓ P)))
@@ -53,15 +52,6 @@ theorem UL_eq : U P f α - L P f α =
 section Integrals
 
 variable (I : a < b) (f α : ℝ → ℝ)
-
-/-- Upper integral. -/
-noncomputable def Uι : ℝ := sInf { U P f α | P : Partition I }
-
-/-- Lower integral. -/
-noncomputable def Lι : ℝ := sSup { L P f α | P : Partition I }
-
-/-- Is a tag for a partition. -/
-def IsTag (t : ℕ → ℝ) : Prop := ∀ i, t i ∈ P.interval i
 
 lemma IsTag.n_le {t : ℕ → ℝ} (ht : IsTag P t) {i : ℕ} (h : P.n ≤ i) : t i = b
   := by --
@@ -95,30 +85,6 @@ theorem L_nonempty : { L P f α | P : Partition I }.Nonempty
   rw [sub_self, mul_zero, zero_add]
   exact rfl -- ∎
 
-/-- A function is said to be Riemann-Stieltjes Integrable if its upper integral
-is equal to its lower integral. -/
-def RiemannStieltjesIntegrable : Prop := Uι I f α = Lι I f α
-
-scoped notation "∫" I "," f "d" α:70 => Uι I f α
-
-section RSI
-variable (h : RiemannStieltjesIntegrable I f α)
-
-set_option linter.unusedSectionVars false in
-include h in
-lemma RiemannStieltjesIntegrable.eq_U : ∫ I, f d α = Uι I f α := rfl
-include h in
-lemma RiemannStieltjesIntegrable.eq_L : ∫ I, f d α = Lι I f α := by rw [h]
-
-end RSI
-
 end Integrals
-
 end Globals
-
-theorem m_le_M (hf : BddOn f (Set.Icc a b)) (i : ℕ) : m P f i ≤ M P f i
-  := by --
-  refine BddOn.sInf_le_sSup ?_
-  exact hf.mono (P.interval_subset i) -- ∎
-
 end Rudin

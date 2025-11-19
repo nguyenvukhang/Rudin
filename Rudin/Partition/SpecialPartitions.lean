@@ -1,4 +1,6 @@
-import Rudin.Partition.Insert
+import Mathlib.Data.Real.Archimedean
+
+import Rudin.Defs.Partition
 
 namespace Rudin
 

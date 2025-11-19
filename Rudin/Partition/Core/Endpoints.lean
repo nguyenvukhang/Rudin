@@ -1,4 +1,4 @@
-import Rudin.Partition.Defs
+import Rudin.Defs.Partition
 
 namespace Rudin
 

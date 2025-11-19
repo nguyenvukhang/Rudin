@@ -3,7 +3,7 @@ import Mathlib.Data.Real.Basic
 
 universe u
 
-variable {l : List ℝ} {x : ℝ}
+variable {l : List ℝ} {x : ℝ} (hl : l.Sorted (· < ·)) (hx : x ∉ l) {i j k : ℕ}
 
 namespace List
 
@@ -90,14 +90,15 @@ theorem Sorted.orderedInsert_of_lt (hl : l.Sorted (· < ·)) :
       exact congrArg (List.cons y) ih -- ∎
 
 -- This is the ultimate goal.
-theorem Sorted.orderedInsert_sorted_lt (hlt : l.Sorted (· < ·)) (hx : x ∉ l)
+include hl hx in
+theorem Sorted.orderedInsert_sorted_lt
   : (l.orderedInsert (· ≤ ·) x).Sorted (· < ·)
   := by --
-  have h₁ : (l.orderedInsert (· ≤ ·) x).Sorted (· ≤ ·) := hlt.le_of_lt.orderedInsert x l
+  have h₁ : (l.orderedInsert (· ≤ ·) x).Sorted (· ≤ ·) := hl.le_of_lt.orderedInsert x l
   have h₀ : l.Nodup := by
     rw [List.nodup_iff_pairwise_ne, List.pairwise_iff_get]
     intro i j hij
-    exact (hlt.get_strictMono hij).ne
+    exact (hl.get_strictMono hij).ne
   exact h₁.lt_of_le (h₀.orderedInsert hx) -- ∎
 
 -- main: List.getElem_cons_succ
@@ -112,8 +113,8 @@ private lemma ℓ₁ {y : ℝ} {ys : List ℝ} {i : ℕ} (hi₀ : 0 < i) (hi : i
   | succ k ih =>
     simp only [getElem_cons_succ, add_tsub_cancel_right] -- ∎
 
-theorem orderedInsert_leᵢ (hl : l.Sorted (· < ·))
-  (hx : x ∉ l) {i : ℕ} (hi : i < l.length) :
+include hl hx in
+private theorem orderedInsert_leᵢ (hi : i < l.length) :
   haveI : i < (l.orderedInsert (· ≤ ·) x).length := by
     rw [orderedInsert_length]
     exact Nat.lt_add_right 1 hi
@@ -147,8 +148,8 @@ theorem orderedInsert_leᵢ (hl : l.Sorted (· < ·))
     refine (ℓ₁ ?_ _).symm
     exact Nat.zero_lt_of_ne_zero hi₀ -- ∎
 
-theorem orderedInsert_geᵢ (hl : l.Sorted (· < ·))
-  (hx : x ∉ l) {i : ℕ} (hi : i < l.length) :
+include hl hx in
+private theorem orderedInsert_geᵢ (hi : i < l.length) :
   haveI : i + 1 < (l.orderedInsert (· ≤ ·) x).length := by
     rw [orderedInsert_length]
     exact Nat.add_lt_add_right hi 1
@@ -180,8 +181,8 @@ theorem orderedInsert_geᵢ (hl : l.Sorted (· < ·))
       rw [heqᵢ]
       exact ih -- ∎
 
-example (hl : l.Sorted (· < ·))
-  (hx : x ∉ l) {i : ℕ} (hi : i < l.length) :
+include hl hx in
+theorem orderedInsert_get (hi : i < l.length) :
   haveI : i + 1 < (l.orderedInsert (· ≤ ·) x).length := by
     rw [orderedInsert_length]
     exact Nat.succ_lt_succ hi
@@ -199,5 +200,39 @@ example (hl : l.Sorted (· < ·))
       exact mem_of_getElem hx
     simp only [↓reduceIte, this]
     exact orderedInsert_geᵢ hl hx hi hge -- ∎
+
+include hl hx in
+theorem orderedInsert_lt (hik : i < k) (hk : k < l.length + 1) :
+  haveI : k < (l.orderedInsert (· ≤ ·) x).length := by rw [orderedInsert_length]; exact hk
+  haveI : i < l.length := hik.trans_le (Nat.le_of_lt_succ hk)
+  (l.orderedInsert (· ≤ ·) x)[k] = x → l[i] ≤ x
+  := by --
+  have hil : i < l.length := hik.trans_le (Nat.le_of_lt_succ hk)
+  intro hkx
+  by_contra hle
+  have := orderedInsert_get hl hx hil
+  simp only [↓reduceIte, hle] at this
+  have hlt : x < l[i] := lt_of_not_ge hle
+  rw [<-hkx, this] at hlt
+  refine hlt.not_ge ?_
+  have : (l.orderedInsert (· ≤ ·) x).Sorted (· ≤ ·) := hl.le_of_lt.orderedInsert x l
+  refine this.get_mono ?_
+  exact hik -- ∎
+
+include hl hx in
+theorem orderedInsert_ge (hik : i ≥ k) (hi : i < l.length) (hk : k < l.length + 1) :
+  haveI : k < (l.orderedInsert (· ≤ ·) x).length := by rw [orderedInsert_length]; exact hk
+  (l.orderedInsert (· ≤ ·) x)[k] = x → x ≤ l[i]
+  := by --
+  intro hkx
+  by_contra hle'
+  have hle : l[i] ≤ x := Std.le_of_not_ge hle'
+  have hlt : l[i] < x := lt_of_le_not_ge hle hle'
+  have := orderedInsert_get hl hx hi
+  simp only [↓reduceIte, hle] at this
+  rw [<-hkx, this] at hlt
+  refine hlt.not_ge ?_
+  have : (l.orderedInsert (· ≤ ·) x).Sorted (· ≤ ·) := hl.le_of_lt.orderedInsert x l
+  exact this.get_mono hik -- ∎
 
 end List
