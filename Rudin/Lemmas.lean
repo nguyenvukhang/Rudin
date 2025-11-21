@@ -1,2 +1,2 @@
-import Rudin.Axioms.Basic
+import Rudin.Lemmas.Globals
 -- WARNING: THIS FILE IS AUTO-GENERATED.

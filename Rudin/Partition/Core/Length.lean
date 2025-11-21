@@ -54,5 +54,9 @@ theorem len_strictMono : StrictMono (fun P : Partition I ↦ P.n)
   rw [<-List.toFinset_card_of_nodup P₁.nodup, <-List.toFinset_card_of_nodup P₂.nodup]
   exact Finset.card_lt_card hlt -- ∎
 
+theorem len_mono : Monotone (fun P : Partition I ↦ P.n)
+  := by --
+  exact len_strictMono.monotone -- ∎
+
 end Partition
 end Rudin

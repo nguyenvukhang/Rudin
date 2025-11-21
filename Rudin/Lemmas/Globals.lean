@@ -11,7 +11,7 @@ variable {a b : ℝ} {I : a < b} (P : Partition I)
 theorem m_le_M (hf : BddOn f (Icc a b)) (i : ℕ) : m P f i ≤ M P f i
   := by --
   refine BddOn.sInf_le_sSup ?_
-  exact hf.mono (P.interval_subset i) -- ∎
+  exact hf.anti (P.interval_subset i) -- ∎
 
 section Globals
 

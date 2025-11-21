@@ -1,6 +1,6 @@
 import Mathlib.Data.Real.Archimedean
 
-variable {A : Set ℝ} (hA₀ : A.Nonempty)
+variable {A B : Set ℝ} (hA₀ : A.Nonempty) (hB₀ : B.Nonempty)
 
 include hA₀ in
 theorem sSup.exist_sub_lt_ε (hA : BddAbove A)
@@ -29,6 +29,18 @@ theorem sInf.exist_sub_lt_ε (hA : BddBelow A)
   dsimp only [sInf]
   rw [sub_neg_eq_add, neg_add_eq_sub]
   exact ha -- ∎
+
+include hA₀ in
+theorem sSup.mono (hB : BddAbove B) : A ⊆ B → sSup A ≤ sSup B
+  := by --
+  intro hAB
+  exact csSup_le_csSup hB hA₀ hAB -- ∎
+
+include hA₀ in
+theorem sInf.anti (hB : BddBelow B) : A ⊆ B → sInf B ≤ sInf A
+  := by --
+  intro hAB
+  exact csInf_le_csInf hB hA₀ hAB -- ∎
 
 include hA₀ in
 theorem sSup.set_add_right (hA : BddAbove A) (b : ℝ) : sSup A + b = sSup { a + b | a ∈ A }

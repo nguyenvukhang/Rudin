@@ -114,7 +114,7 @@ private lemma ℓ₁ {y : ℝ} {ys : List ℝ} {i : ℕ} (hi₀ : 0 < i) (hi : i
     simp only [getElem_cons_succ, add_tsub_cancel_right] -- ∎
 
 include hl hx in
-private theorem orderedInsert_leᵢ (hi : i < l.length) :
+theorem orderedInsert_leᵢ (hi : i < l.length) :
   haveI : i < (l.orderedInsert (· ≤ ·) x).length := by
     rw [orderedInsert_length]
     exact Nat.lt_add_right 1 hi
@@ -149,7 +149,7 @@ private theorem orderedInsert_leᵢ (hi : i < l.length) :
     exact Nat.zero_lt_of_ne_zero hi₀ -- ∎
 
 include hl hx in
-private theorem orderedInsert_geᵢ (hi : i < l.length) :
+theorem orderedInsert_geᵢ (hi : i < l.length) :
   haveI : i + 1 < (l.orderedInsert (· ≤ ·) x).length := by
     rw [orderedInsert_length]
     exact Nat.add_lt_add_right hi 1

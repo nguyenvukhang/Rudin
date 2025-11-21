@@ -21,7 +21,62 @@ class BddOn [LE R] (f : β → R) (A : Set β) : Prop where
 
 example : f '' A = { f x | x ∈ A } := rfl -- quick reminder.
 
-section Real.ish
+--------------------------------------------------------------------------------
+section Preorder
+variable [Preorder R]
+
+theorem BddOn.anti : Antitone fun A ↦ BddOn f A
+  := by --
+  intro B A h
+  have h : f '' B ⊆ f '' A := Set.image_mono h
+  intro s
+  exact { below' := s.below'.mono h, above' := s.above'.mono h } -- ∎
+theorem BddOn.subset (s : BddOn f A) {B : Set β} (h : B ⊆ A) : BddOn f B
+  := by --
+  exact BddOn.anti h s -- ∎
+theorem BddOn.inter_left (hA : BddOn f A) : BddOn f (A ∩ B)
+  := by --
+  exact BddOn.anti Set.inter_subset_left hA -- ∎
+theorem BddOn.inter_right (hB : BddOn f B) : BddOn f (A ∩ B)
+  := by --
+  exact BddOn.anti Set.inter_subset_right hB -- ∎
+
+end Preorder
+--------------------------------------------------------------------------------
+section LinearOrder
+variable [LinearOrder R]
+
+theorem BddOn.union (hA : BddOn f A) (hB : BddOn f B) : BddOn f (A ∪ B)
+  := by --
+  exact {
+    above' := by
+      obtain ⟨m₁, hm₁⟩ := hA.above'
+      obtain ⟨m₂, hm₂⟩ := hB.above'
+      use m₁ ⊔ m₂
+      intro y ⟨x, hx, heq⟩
+      subst heq
+      rcases hx with hA | hB
+      · have : f x ∈ f '' A := Set.mem_image_of_mem f hA
+        exact (hm₁ this).trans (le_max_left m₁ m₂)
+      · have : f x ∈ f '' B := Set.mem_image_of_mem f hB
+        exact (hm₂ this).trans (le_max_right m₁ m₂)
+    below' := by
+      obtain ⟨m₁, hm₁⟩ := hA.below'
+      obtain ⟨m₂, hm₂⟩ := hB.below'
+      use m₁ ⊓ m₂
+      intro y ⟨x, hx, heq⟩
+      subst heq
+      rcases hx with hA | hB
+      · have : f x ∈ f '' A := Set.mem_image_of_mem f hA
+        exact (min_le_left m₁ m₂).trans (hm₁ this)
+      · have : f x ∈ f '' B := Set.mem_image_of_mem f hB
+        exact (min_le_right m₁ m₂).trans (hm₂ this)
+  } -- ∎
+
+
+end LinearOrder
+--------------------------------------------------------------------------------
+section AddGroup
 
 variable [AddGroup R]
 
@@ -106,8 +161,8 @@ theorem BddOn.abs_iff [Lattice R] [AddLeftMono R] [AddRightMono R] : BddOn f A �
     have hfx : |f x| ∈ |f| '' A := Set.mem_image_of_mem |f| hx
     exact (h hfx).trans' <| le_abs_self (f x) -- ∎
 
-end Real.ish
-
+end AddGroup
+--------------------------------------------------------------------------------
 section RealValuedFunctions
 -- Theorems in here are new and so they probably spawn midway through going
 -- through lecture notes or doing homework. Not the best time to generalize.
@@ -157,16 +212,12 @@ theorem BddOn.real_iff : BddOn f A ↔ ∃ M, ∀ n ∈ A, |f n| ≤ M
       subst hxy
       exact hM x hx -- ∎
 
-theorem BddOn.mono (s : BddOn f A) {B : Set β} (h : B ⊆ A) : BddOn f B := by
-  have h : f '' B ⊆ f '' A := Set.image_mono h
-  refine { below' := s.below'.mono h, above' := s.above'.mono h }
-
 theorem BddOn.sInf_le_sSup (s : BddOn f A) : sInf (f '' A) ≤ sSup (f '' A)
   := by --
   exact Real.sInf_le_sSup (f '' A) s.below' s.above' -- ∎
 
 end RealValuedFunctions
-
+--------------------------------------------------------------------------------
 section ConditionallyCompleteLattice_lemmas
 
 variable [ConditionallyCompleteLattice R] {x : β}
@@ -200,7 +251,7 @@ theorem BddOn.csInf_le_csSup (s : BddOn f A) (hA : A.Nonempty) : sInf (f '' A) �
   exact _root_.csInf_le_csSup s.below' s.above' (hA.image f) -- ∎
 
 end ConditionallyCompleteLattice_lemmas
-
+--------------------------------------------------------------------------------
 class Bdd [LE R] (f : β → R) : Prop where
   univ' : BddOn f Set.univ
 

@@ -1,5 +1,6 @@
+import Rudin.Partition.SpecialPartitions
+import Rudin.Results.Basic
 import Rudin.Results.IsTag
-import Rudin.Partition
 
 open Set
 
@@ -41,7 +42,7 @@ theorem Theorem._6._7._b (ε : ℝ) :
       specialize ht i
       have hs' : f (s i) ∈ f '' P.interval i := ⟨s i, hs, rfl⟩
       have ht' : f (t i) ∈ f '' P.interval i := ⟨t i, ht, rfl⟩
-      have hbd : BddOn f (P.interval i) := bdd_f_bdd_on_interval hf i
+      have hbd : BddOn f (P.interval i) := P.interval_bdd_on hf i
       refine abs_sub_le_of_le_of_le ?_ ?_ ?_ ?_
       · refine hbd.csInf_le hs
       · exact hbd.le_csSup hs

@@ -53,7 +53,7 @@ lemma le_extend (P : Partition I) (ℓ : List ℝ) : P ≤ P.extend ℓ
   | cons x xs ih =>
   change t ∈ (ι' x P).extend xs
   dsimp only [ι', ι]
-  if h : x ∉ P ∧ x ∈ Icc a b then
+  if h : P.IsInsertable x then
     rw [dif_pos h]
     refine ih _ ?_
     rw [mem_iff_mem_list, List.mem_orderedInsert]

@@ -1,5 +1,5 @@
 import Rudin.Alpha
-import Rudin.Axioms
+import Rudin.Partition.Globals
 
 open Set
 
@@ -43,14 +43,11 @@ theorem Lι_le_Uι : Lι I f α ≤ Uι I f α
   exact this -- ∎
 
 include hf in
-theorem bdd_f_bdd_on_interval (i : ℕ) : BddOn f (P.interval i) := hf.mono (P.interval_subset i)
-
-include hf in
 @[deprecated m_le_M (since := "when")]
 theorem interval_sInf_le_sSup (i : ℕ) : sInf (f '' P.interval i) ≤ sSup (f '' P.interval i)
   := by --
   refine BddOn.sInf_le_sSup ?_
-  exact hf.mono (P.interval_subset i) -- ∎
+  exact hf.anti (P.interval_subset i) -- ∎
 
 theorem sInf_ab_le_sInf_interval (i : ℕ) : sInf (Icc a b) ≤ sInf (P.interval i)
   := by --

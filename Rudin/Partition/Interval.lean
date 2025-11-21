@@ -53,7 +53,7 @@ theorem mem_principalᵢ (i : Fin P.n) : P[i] ∈ Icc a b
 theorem interval_bdd_on (hf : BddOn f (Icc a b)) (i : ℕ)
   : BddOn f (P.interval i)
   := by --
-  exact hf.mono (P.interval_subset i) -- ∎
+  exact hf.anti (P.interval_subset i) -- ∎
 
 end Partition
 end Rudin

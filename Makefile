@@ -13,9 +13,9 @@ check: generate
 
 generate:
 	lake-dino generate Rudin.Alpha
-	lake-dino generate Rudin.Axioms
 	lake-dino generate Rudin.Partition
 	lake-dino generate Rudin.Prelude
+	lake-dino generate Rudin.Lemmas
 
 sorry:
 	rg sorry -t lean --colors 'match:fg:yellow' --colors 'line:fg:white'
