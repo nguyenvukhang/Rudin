@@ -191,16 +191,6 @@ theorem Definition._7._7_gen [MetricSpace β] {F : ℕ → α → β} {f : α �
   rw [Metric.tendstoUniformlyOn_iff]
   simp only [eventually_atTop] -- ∎
 
-theorem Definition._7._8 [MetricSpace β] [CompleteSpace β] {F : ℕ → α → β} :
-  (∃ f, TendstoUniformlyOn F f atTop E) ↔
-  ∀ ε > 0, ∃ N, ∀ m ≥ N, ∀ n ≥ N, ∀ x ∈ E, dist (F m x) (F n x) < ε
-  := by --
-  rw [<-Metric.uniformCauchySeqOn_iff]
-  sorry
-  -- rw [Metric.tendstoUniformlyOn_iff]
-  -- simp only [eventually_atTop] -- ∎
-
-
 end Ch7
 
 end Rudin

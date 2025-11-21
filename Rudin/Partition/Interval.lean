@@ -56,5 +56,15 @@ theorem interval_bdd_on (hf : BddOn f (Icc a b)) (i : ℕ)
   := by --
   exact hf.anti (P.interval_subset i) -- ∎
 
+theorem interval_bdd_above (hf : BddOn f (Icc a b)) (i : ℕ)
+  : BddAbove (f '' (P.interval i))
+  := by --
+  exact (P.interval_bdd_on hf i).above' -- ∎
+
+theorem interval_bdd_below (hf : BddOn f (Icc a b)) (i : ℕ)
+  : BddBelow (f '' (P.interval i))
+  := by --
+  exact (P.interval_bdd_on hf i).below' -- ∎
+
 end Partition
 end Rudin

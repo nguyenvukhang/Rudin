@@ -209,4 +209,103 @@ theorem RiemannStieltjesIntegrable.iff : RiemannStieltjesIntegrable I f α ↔
     rw [sub_eq_zero] at this
     exact this -- ∎
 
+section MultipleFunctions
+variable {f₁ f₂ : ℝ → ℝ} (hf₁ : BddOn f₁ (Icc a b)) (hf₂ : BddOn f₂ (Icc a b))
+
+include hf₂ hα in
+theorem U_f_mono (hle : ∀ x ∈ Icc a b, f₁ x ≤ f₂ x) :
+  U P f₁ α ≤ U P f₂ α
+  := by --
+  dsimp only [U]
+  refine Finset.sum_le_sum ?_
+  intro i _
+  refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα i)
+  dsimp only [M]
+  have hle : ∀ x ∈ f₁ '' P.interval i, ∃ y ∈ f₂ '' P.interval i, x ≤ y := by
+    intro x ⟨t, ht, htx⟩
+    subst htx
+    refine ⟨f₂ t, ?_, ?_⟩
+    · exact mem_image_of_mem f₂ ht
+    · refine hle t (P.interval_subset i ht)
+  let I₁ := f₁ '' P.interval i
+  let I₂ := f₂ '' P.interval i
+  refine ConditionallyCompleteLattice.csSup_le I₁ (sSup I₂) ?_ ?_
+  · exact (P.interval_nonempty i).image f₁
+  · intro x hx
+    specialize hle x hx
+    obtain ⟨y, hy, hle⟩ := hle
+    refine hle.trans ?_
+    refine le_csSup ?_ hy
+    exact P.interval_bdd_above hf₂ i -- ∎
+
+include hf₁ hα in
+theorem L_f_mono (hle : ∀ x ∈ Icc a b, f₁ x ≤ f₂ x) :
+  L P f₁ α ≤ L P f₂ α
+  := by --
+  dsimp only [L]
+  refine Finset.sum_le_sum ?_
+  intro i _
+  refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα i)
+  dsimp only [m]
+  have hle : ∀ y ∈ f₂ '' P.interval i, ∃ x ∈ f₁ '' P.interval i, x ≤ y := by
+    intro y ⟨t, ht, hty⟩
+    subst hty
+    refine ⟨f₁ t, ?_, ?_⟩
+    · exact mem_image_of_mem f₁ ht
+    · refine hle t (P.interval_subset i ht)
+  let I₁ := f₁ '' P.interval i
+  let I₂ := f₂ '' P.interval i
+  refine ConditionallyCompleteLattice.le_csInf I₂ (sInf I₁) ?_ ?_
+  · exact (P.interval_nonempty i).image f₂
+  · intro y hy
+    specialize hle y hy
+    obtain ⟨x, hx, hle⟩ := hle
+    refine hle.trans' ?_
+    refine csInf_le ?_ hx
+    exact P.interval_bdd_below hf₁ i -- ∎
+
+include hf₁ hf₂ hα in
+theorem Uι_f_mono (hle : ∀ x ∈ Icc a b, f₁ x ≤ f₂ x) :
+  Uι I f₁ α ≤ Uι I f₂ α
+  := by --
+  dsimp only [Uι]
+  let S₁ := { U P f₁ α | P : Partition I }
+  let S₂ := { U P f₂ α | P : Partition I }
+  change sInf S₁ ≤ sInf S₂
+  have hle : ∀ y ∈ S₂, ∃ x ∈ S₁, x ≤ y := by
+    intro y ⟨P, heq⟩
+    subst heq
+    exact ⟨U P f₁ α, ⟨P, rfl⟩, U_f_mono hα hf₂ hle⟩
+  refine ConditionallyCompleteLattice.le_csInf S₂ (sInf S₁) ?_ ?_
+  · exact U_nonempty I f₂ α
+  · intro y hy
+    specialize hle y hy
+    obtain ⟨x, hx, hle⟩ := hle
+    refine hle.trans' ?_
+    refine csInf_le ?_ hx
+    exact U_bdd_below hf₁ hα -- ∎
+
+include hf₁ hf₂ hα in
+theorem Lι_f_mono (hle : ∀ x ∈ Icc a b, f₁ x ≤ f₂ x) :
+  Lι I f₁ α ≤ Lι I f₂ α
+  := by --
+  dsimp only [Lι]
+  let S₁ := { L P f₁ α | P : Partition I }
+  let S₂ := { L P f₂ α | P : Partition I }
+  change sSup S₁ ≤ sSup S₂
+  have hle : ∀ x ∈ S₁, ∃ y ∈ S₂, x ≤ y := by
+    intro y ⟨P, heq⟩
+    subst heq
+    exact ⟨L P f₂ α, ⟨P, rfl⟩, L_f_mono hα hf₁ hle⟩
+  refine ConditionallyCompleteLattice.csSup_le S₁ (sSup S₂) ?_ ?_
+  · exact L_nonempty I f₁ α
+  · intro y hy
+    specialize hle y hy
+    obtain ⟨x, hx, hle⟩ := hle
+    refine hle.trans ?_
+    refine le_csSup ?_ hx
+    exact L_bdd_above hf₂ hα -- ∎
+
+end MultipleFunctions
+
 end Rudin
