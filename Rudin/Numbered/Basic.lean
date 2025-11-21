@@ -1,13 +1,17 @@
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.Normed.Ring.Basic
 
 import Rudin.Partition.SpecialPartitions
 import Rudin.Results.Basic
 import Rudin.Results.IsTag
 
-open Set
+open Set Filter Topology
+
+universe u v w
 
 namespace Rudin
+
+namespace Ch6
 
 variable {a b : ℝ} {I : a < b} {P P' P₁ P₂ : Partition I} {f α : ℝ → ℝ}
   (hf : BddOn f (Icc a b))
@@ -167,5 +171,26 @@ theorem Theorem._6._8 (hf_cont : ContinuousOn f (Icc a b))
   rw [α_telescope]
   rw [mul_comm]
   exact hηε -- ∎
+
+end Ch6
+
+namespace Ch7
+
+variable {α : Type u} {β : Type v} {E : Set α}
+
+set_option linter.dupNamespace false in
+theorem Definition._7._7 {F : ℕ → α → ℂ} {f : α → ℂ}
+  : TendstoUniformlyOn F f atTop E ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, ∀ x ∈ E, dist (f x) (F n x) < ε
+  := by --
+  rw [Metric.tendstoUniformlyOn_iff]
+  simp only [eventually_atTop] -- ∎
+
+theorem Definition._7._7_gen [MetricSpace β] {F : ℕ → α → β} {f : α → β}
+  : TendstoUniformlyOn F f atTop E ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, ∀ x ∈ E, dist (f x) (F n x) < ε
+  := by --
+  rw [Metric.tendstoUniformlyOn_iff]
+  simp only [eventually_atTop] -- ∎
+
+end Ch7
 
 end Rudin
