@@ -7,7 +7,7 @@ use std::path::PathBuf;
 pub enum LineError {
     #[error("If the line contains \"{}\", then it must start with \"{}\".", .0, .0)]
     StartsWith(String),
-    #[error("Leave a space between `Mathlib` imports and `Dino` imports.")]
+    #[error("Leave a space between `Mathlib` imports and `Rudin` imports.")]
     LeaveSpace,
 }
 

@@ -1,5 +1,5 @@
-import Rudin.Alpha
 import Rudin.Partition.Globals
+import Rudin.Partition.Union
 
 open Set
 

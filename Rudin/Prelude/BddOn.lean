@@ -1,8 +1,6 @@
 /-
 This file introduces BddOn, which is BddAbove ∧ BddBelow
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
 import Mathlib.Data.Real.Archimedean
 
 universe u v
@@ -218,7 +216,7 @@ theorem BddOn.sInf_le_sSup (s : BddOn f A) : sInf (f '' A) ≤ sSup (f '' A)
 
 end RealValuedFunctions
 --------------------------------------------------------------------------------
-section ConditionallyCompleteLattice_lemmas
+section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice R] {x : β}
 
@@ -250,7 +248,7 @@ theorem BddOn.csInf_le_csSup (s : BddOn f A) (hA : A.Nonempty) : sInf (f '' A) �
   := by --
   exact _root_.csInf_le_csSup s.below' s.above' (hA.image f) -- ∎
 
-end ConditionallyCompleteLattice_lemmas
+end ConditionallyCompleteLattice
 --------------------------------------------------------------------------------
 class Bdd [LE R] (f : β → R) : Prop where
   univ' : BddOn f Set.univ

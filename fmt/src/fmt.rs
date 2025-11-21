@@ -42,7 +42,7 @@ pub fn space_between_import_libraries(path: &Path, text: &str) -> Result<()> {
             continue;
         }
         let Some(pidx) = last_mathlib else { continue };
-        let bad = line.starts_with("Dino") && pidx + 1 == line_idx;
+        let bad = line.starts_with("Rudin") && pidx + 1 == line_idx;
         if bad {
             return Err(Error::Content {
                 filepath: path.to_path_buf(),

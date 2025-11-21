@@ -1,4 +1,4 @@
-import Rudin.Partition.Core
+import Rudin.Partition.Core.Index
 import Rudin.Partition.Monotone
 
 namespace Rudin

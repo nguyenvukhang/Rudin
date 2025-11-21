@@ -1,5 +1,5 @@
 import Rudin.Partition.Endpoints
-import Mathlib.Tactic
+import Rudin.Partition.Core
 
 namespace Rudin
 

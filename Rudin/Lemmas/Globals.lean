@@ -1,3 +1,5 @@
+import Mathlib.Algebra.BigOperators.Fin
+
 import Rudin.Defs.Globals
 import Rudin.Partition.Interval
 import Rudin.Partition.OrderBot

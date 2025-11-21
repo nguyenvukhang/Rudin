@@ -1,4 +1,4 @@
-import Rudin.Partition.Core.Length
+import Rudin.Defs.Partition
 
 namespace Rudin
 

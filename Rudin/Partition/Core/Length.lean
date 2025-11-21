@@ -1,5 +1,3 @@
-import Mathlib.Data.Finset.Card
-
 import Rudin.Defs.Partition
 
 namespace Rudin

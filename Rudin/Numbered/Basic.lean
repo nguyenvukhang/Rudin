@@ -1,3 +1,6 @@
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.Normed.Ring.Basic
+
 import Rudin.Partition.SpecialPartitions
 import Rudin.Results.Basic
 import Rudin.Results.IsTag

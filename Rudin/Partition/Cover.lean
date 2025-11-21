@@ -1,6 +1,7 @@
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Interval.Set.LinearOrder
 
+import Rudin.Partition.Core
 import Rudin.Partition.Endpoints
 
 namespace Rudin

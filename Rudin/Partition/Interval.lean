@@ -1,4 +1,5 @@
 import Rudin.Partition.Endpoints
+import Rudin.Partition.Core
 import Rudin.Prelude
 
 open Set

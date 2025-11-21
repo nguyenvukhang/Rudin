@@ -1,9 +1,6 @@
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 theorem Finset.sum_fin {f : ℕ → ℝ} {n : ℕ} : ∑ i : Fin n, f i = ∑ i < n, f i
   := by --

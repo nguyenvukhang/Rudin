@@ -1,6 +1,8 @@
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
 import Rudin.Alpha.Basic
 import Rudin.Partition.Extend
-import Rudin.Partition.Union
 
 open Set
 
@@ -157,13 +159,12 @@ private lemma L_mono₁ (x : ℝ)
         exact P'.mono (Nat.sub_le k 1)
       exact sInf.anti h₀ hf_bdd.below' h₁ -- ∎
 
+include hf hα in
 /-- If P' is a refinement of P, then the lower sum obtained from P' will be
 greater or equal to that of P. -/
 theorem L_mono
-  (hf : BddOn f (Icc a b))
-  (hα : MonotoneOn α (Icc a b))
   : Monotone fun P : Partition I ↦ L P f α
-  := by
+  := by --
   intro P P' hle -- P' is a refinement of P
   change L P f α ≤ L P' f α
   obtain ⟨ℓ, heq⟩ := Partition.extendable_of_le hle
@@ -172,7 +173,7 @@ theorem L_mono
   | nil => exact le_rfl
   | cons x xs ih =>
     refine (L_mono₁ P hf hα x).trans ?_
-    exact ih <| (insert x P).le_extend xs
+    exact ih <| (insert x P).le_extend xs -- ∎
 
 include hf hα in
 private lemma U_anti₁ (x : ℝ)
@@ -296,13 +297,12 @@ private lemma U_anti₁ (x : ℝ)
         exact P'.mono (Nat.le_succ k)
       exact sSup.mono h₀ hf_bdd.above' h₁ -- ∎
 
+include hf hα in
 /-- If P' is a refinement of P, then the upper sum obtained from P' will be
 lesser or equal to that of P. -/
 theorem U_anti
-  (hf : BddOn f (Icc a b))
-  (hα : MonotoneOn α (Icc a b))
   : Antitone fun P : Partition I ↦ U P f α
-  := by
+  := by --
   intro P P' hle -- P' is a refinement of P
   change U P' f α ≤ U P f α
   obtain ⟨ℓ, heq⟩ := Partition.extendable_of_le hle
@@ -311,6 +311,6 @@ theorem U_anti
   | nil => exact le_rfl
   | cons x xs ih =>
     refine (U_anti₁ P hf hα x).trans' ?_
-    exact ih <| (insert x P).le_extend xs
+    exact ih <| (insert x P).le_extend xs -- ∎
 
 end Rudin
