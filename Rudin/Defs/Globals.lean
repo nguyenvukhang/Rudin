@@ -36,16 +36,32 @@ def IsTag (t : ℕ → ℝ) : Prop := ∀ i, t i ∈ P.interval i
 is equal to its lower integral. -/
 def RiemannStieltjesIntegrable : Prop := Uι I f α = Lι I f α
 
-scoped notation "∫" I "," f "d" α:70 => Uι I f α
+open Classical in
+noncomputable def RiemannStieltjesIntegral : ℝ
+  := if RiemannStieltjesIntegrable I f α then Uι I f α else 0
+
+scoped notation "∫" I "," f "d" α:70 => RiemannStieltjesIntegral I f α
+
+open Classical in
+lemma RiemannStieltjesIntegral.def_eq :
+  ∫ I, f d α = if RiemannStieltjesIntegrable I f α then Uι I f α else 0 := rfl
 
 section RSI
 variable (h : RiemannStieltjesIntegrable I f α)
 
 set_option linter.unusedSectionVars false in
 include h in
-lemma RiemannStieltjesIntegrable.eq_U : ∫ I, f d α = Uι I f α := rfl
+lemma RiemannStieltjesIntegrable.eq_U : ∫ I, f d α = Uι I f α
+  := by --
+  rw [RiemannStieltjesIntegral.def_eq]
+  exact if_pos h -- ∎
+
 include h in
-lemma RiemannStieltjesIntegrable.eq_L : ∫ I, f d α = Lι I f α := by rw [h]
+lemma RiemannStieltjesIntegrable.eq_L : ∫ I, f d α = Lι I f α
+  := by --
+  rw [RiemannStieltjesIntegral.def_eq]
+  rw [if_pos h]
+  exact h -- ∎
 
 end RSI
 end Integrals

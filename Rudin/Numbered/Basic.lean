@@ -78,7 +78,7 @@ theorem Theorem._6._7._c (hrsi : RiemannStieltjesIntegrable I f α) (ε : ℝ) :
     refine mul_le_mul_of_nonneg_right ?_ (P.Δ_nonneg hα i)
     exact ht.le_M hf i
   have hL' : L P f α ≤ ∫ I, f d α := by rw [hrsi.eq_L]; exact Lι_top hf hα P
-  have hU' : ∫ I, f d α ≤ U P f α := Uι_bot hf hα P
+  have hU' : ∫ I, f d α ≤ U P f α := by rw [hrsi.eq_U]; exact Uι_bot hf hα P
   refine h.trans_le' (abs_sub_le_of_le_of_le ?_ ?_ ?_ ?_)
   · exact hL
   · exact hU
