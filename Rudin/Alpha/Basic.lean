@@ -4,7 +4,7 @@ open Set
 
 namespace Rudin
 
-variable {a b : ℝ} {I : a < b} {P : Partition I} {α : ℝ → ℝ}
+variable {a b : ℝ} {I : a < b} {P : Partition I} {f α : ℝ → ℝ}
   (hα : MonotoneOn α (Icc a b))
 
 include hα in

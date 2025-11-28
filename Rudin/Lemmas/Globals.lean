@@ -8,7 +8,7 @@ open Set
 
 namespace Rudin
 
-variable {a b : ℝ} {I : a < b} (P : Partition I)
+variable {a b : ℝ} {I : a < b} (P : Partition I) {f : ℝ → ℝ}
 
 theorem m_le_M (hf : BddOn f (Icc a b)) (i : ℕ) : m P f i ≤ M P f i
   := by --

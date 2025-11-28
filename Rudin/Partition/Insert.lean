@@ -207,6 +207,7 @@ theorem insert_mono (x : ℝ) : Monotone (fun P : Partition I ↦ insert x P)
   · exact Or.inr (hleP htP₁) -- ∎
 
 section Get
+variable {i k : ℕ}
 
 include hxP in -- successful insert
 private lemma orderedInsert_le₀ :

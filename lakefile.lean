@@ -7,7 +7,7 @@ package Rudin where
   keywords := #["math"]
   leanOptions :=
   #[⟨`pp.unicode.fun, true⟩,
-    ⟨`relaxedAutoImplicit, false⟩,
+    ⟨`autoImplicit, false⟩,
     ⟨`weak.linter.mathlibStandardSet, true⟩]
 
 require "leanprover-community" / mathlib
