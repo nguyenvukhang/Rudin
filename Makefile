@@ -3,19 +3,19 @@ LAKE_BUILD := lake build --log-level=warning
 current: focus
 
 focus: check
-	lake-dino build Rudin
+	slope build Rudin
 
 all: check
-	lake-dino build
+	slope build
 
 check: generate
-	lake-dino check
+	slope check
 
 generate:
-	lake-dino generate Rudin.Alpha
-	lake-dino generate Rudin.Partition
-	lake-dino generate Rudin.Prelude
-	lake-dino generate Rudin.Lemmas
+	slope generate Rudin.Alpha
+	slope generate Rudin.Partition
+	slope generate Rudin.Prelude
+	slope generate Rudin.Lemmas
 
 sorry:
 	rg sorry -t lean --colors 'match:fg:yellow' --colors 'line:fg:white'
