@@ -144,3 +144,17 @@ lemma eq_zero_of_nonneg_le_pos {a : ℝ} (ha : 0 ≤ a) : (∀ ε > 0, a ≤ ε)
   · exact heq.symm
   · specialize h (a / 2) (half_pos hlt)
     exact False.elim (h.not_gt (div_two_lt_of_pos hlt)) -- ∎
+
+include hA₀ hB₀
+theorem sSup_le_add (hA : BddAbove A) (hB : BddAbove B)
+  : sSup { a + b | (a ∈ A) (b ∈ B) } ≤ sSup A + sSup B
+  := by --
+  refine csSup_le ?_ ?_
+  · obtain ⟨a, ha⟩ := hA₀
+    obtain ⟨b, hb⟩ := hB₀
+    exact ⟨a + b, a, ha, b, hb, rfl⟩
+  · intro v ⟨a, ha, b, hb, heq⟩
+    subst heq
+    refine add_le_add ?_ ?_
+    · exact le_csSup hA ha
+    · exact le_csSup hB hb -- ∎
