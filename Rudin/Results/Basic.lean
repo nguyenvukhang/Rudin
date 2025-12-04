@@ -83,14 +83,12 @@ theorem L_bdd_below : BddBelow { L P f α | P : Partition I }
   use y * (α b - α a)
   intro val ⟨P, heq⟩
   subst heq
-
   have : y ≤ sInf (f '' Icc a b) := by
     refine le_csInf ?_ ?_
     · exact (nonempty_Icc.mpr I.le).image f
     · intro z ⟨x, hx, heq⟩
       subst heq
       exact hy ⟨x, hx, rfl⟩
-
   have : ∑ i ∈ Finset.range P.n, y * P.Δ α i ≤
     ∑ i ∈ Finset.range P.n, sInf (f '' P.interval ↑i) * P.Δ α i := by
     refine Finset.sum_le_sum ?_
@@ -110,14 +108,12 @@ theorem U_bdd_above : BddAbove { U P f α | P : Partition I }
   use y * (α b - α a)
   intro val ⟨P, heq⟩
   subst heq
-
   have : sSup (f '' Icc a b) ≤ y := by
     refine csSup_le ?_ ?_
     · exact (nonempty_Icc.mpr I.le).image f
     · intro z ⟨x, hx, heq⟩
       subst heq
       exact hy ⟨x, hx, rfl⟩
-
   have : ∑ i ∈ Finset.range P.n, sSup (f '' P.interval ↑i) * P.Δ α i
     ≤ ∑ i ∈ Finset.range P.n, y * P.Δ α i := by
     refine Finset.sum_le_sum ?_
@@ -177,23 +173,18 @@ theorem RiemannStieltjesIntegrable.iff : RiemannStieltjesIntegrable I f α ↔
       exact ⟨P, h⟩
     let P := P₁ ⊔ P₂
     refine ⟨P, sub_right_lt_of_lt_add ?_⟩
-
     have : U P f α ≤ U P₂ f α := U_anti hf hα le_sup_right
     refine this.trans_lt ?_
-
     have : U P₂ f α < ε / 2 + Uι I f α := lt_add_of_tsub_lt_right hP₂
     refine this.trans ?_
-
     rw [h]
-
     have : L P₁ f α ≤ L P f α := L_mono hf hα le_sup_left
     have : ε + L P₁ f α ≤ ε + L P f α := (add_le_add_iff_left ε).mpr this
     refine this.trans_lt' ?_
-
     conv => rhs; rw [<-add_halves ε]
     rw [add_assoc]
     have : Lι I f α < ε / 2 + L P₁ f α := lt_add_of_tsub_lt_right hP₁
-    exact add_lt_add_left this (ε / 2)
+    exact add_lt_add_right this (ε / 2)
   · intro h
     have hU (P : Partition I) : Uι I f α ≤ U P f α := Uι_bot hf hα P
     have hL (P : Partition I) : L P f α ≤ Lι I f α := Lι_top hf hα P

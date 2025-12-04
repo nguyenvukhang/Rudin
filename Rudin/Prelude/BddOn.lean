@@ -9,7 +9,6 @@ variable
   {β : Type u}
   {R : Type v}
   {A B : Set β}
-
   {f g : β → R}
 
 /-- Declares that `f` is bounded on `A`. -/

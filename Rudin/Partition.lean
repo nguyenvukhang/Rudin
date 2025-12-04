@@ -17,4 +17,6 @@ import Rudin.Partition.Prelude.SortedList
 import Rudin.Partition.Single
 import Rudin.Partition.SpecialPartitions
 import Rudin.Partition.Union
+set_option linter.style.longLine false
+
 -- WARNING: THIS FILE IS AUTO-GENERATED.

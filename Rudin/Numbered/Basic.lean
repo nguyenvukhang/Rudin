@@ -41,7 +41,6 @@ theorem Theorem._6._7._b (ε : ℝ) :
   := by --
   intro h s t hs ht
   rw [UL_eq] at h
-
   have (i : ℕ) : |f (s i) - f (t i)| ≤ M P f i - m P f i := by
     dsimp only [m, M]
     rcases Nat.lt_or_ge i P.n with hlt | hge
@@ -57,12 +56,10 @@ theorem Theorem._6._7._b (ε : ℝ) :
       · exact hbd.le_csSup ht
     · rw [ht.n_le P hge, hs.n_le P hge, sub_self, abs_zero]
       exact sub_nonneg_of_le (m_le_M P hf i)
-
   have (i : ℕ) : |f (s i) - f (t i)| * (α (P i) - α (P (i - 1)))
     ≤ (M P f i - m P f i) * (α (P i) - α (P (i - 1))) := by
     refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα i)
     exact this i
-
   have : ∑ i ∈ Finset.range P.n, |f (s i) - f (t i)| * (α (P i) - α (P (i - 1))) ≤
   ∑ i ∈ Finset.range P.n, (M P f i - m P f i) * (α (P i) - α (P (i - 1))) := by
     exact Finset.sum_le_sum fun i _ ↦ this i
@@ -111,7 +108,6 @@ theorem Theorem._6._8 (hf_cont : ContinuousOn f (Icc a b))
     rw [α_trivial_U hα hα₀, α_trivial_L hα hα₀, sub_self]
     exact hε
   else
-
   have hα₀ : 0 < α b - α a := (α_sub_nonneg hα I.le).lt_of_ne' hα₀
   have : 0 < ε / (α b - α a) := div_pos hε hα₀
   obtain ⟨η, hη₀, hη : η < ε / (α b - α a)⟩ := exists_between (div_pos hε hα₀)

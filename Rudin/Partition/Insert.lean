@@ -311,7 +311,6 @@ theorem insert_get {k : ℕ} (hk : insert x P k = x) : ∀ i,
   := by --
   intro i
   let P' := insert x P
-
   have hkP'n : k < P'.n := by
     -- If `k < P'.n`, then `x = b`, making the insert invalid.
     by_contra hlt
@@ -321,7 +320,6 @@ theorem insert_get {k : ℕ} (hk : insert x P k = x) : ∀ i,
   have hkPn : k < P.n + 1 := by
     rw [<-P.insert_n hxP]
     exact hkP'n
-
   if hiPn : P.n ≤ i then
     -- If `P.n ≤ i`, we have an out-of-bounds case.
     -- Then the result becomes `b = b`, which is trivial.
@@ -336,7 +334,6 @@ theorem insert_get {k : ℕ} (hk : insert x P k = x) : ∀ i,
     rw [dif_neg hiPn.not_gt, dif_neg this]
   else
   replace hiPn : i < P.n := Nat.lt_of_not_le hiPn
-
   if hik : i < k then
     simp only [reduceIte, hik]
     refine P.orderedInsert_le₀ hxP ?_

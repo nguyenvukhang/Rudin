@@ -64,9 +64,7 @@ theorem Sorted.orderedInsert_of_lt (hl : l.Sorted (· < ·)) :
     let le : ℝ → ℝ → Prop := (· ≤ ·)
     change (y :: ys).orderedInsert lt x = (y :: ys).orderedInsert le x
     change List.orderedInsert lt x ys = List.orderedInsert le x ys at ih
-
     simp only [List.orderedInsert]
-
     rcases lt_trichotomy x y with hlt | heq | hgt
     · -- x < y
       have : lt x y := hlt

@@ -39,7 +39,7 @@ theorem exists_lt (I : a < b) {ε : ℝ} (hε : 0 < ε) : ∃ P : Partition I, �
     exact add_sub_cancel a b
   have hf : StrictMonoOn f (Finset.range n) := by
     intro i hi j hj hij
-    refine add_lt_add_left ?_ a
+    refine add_lt_add_right ?_ a
     refine mul_lt_mul_of_pos_left (Nat.cast_lt.mpr hij) ?_
     exact mul_pos (sub_pos.mpr I) hn₀'
   let P := Partition.ofFn I hf hfa hfb

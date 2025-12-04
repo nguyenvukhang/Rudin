@@ -58,11 +58,9 @@ private lemma L_mono₁ (x : ℝ)
   simp only [P.insert_n hxP]
   change ∑ i ∈ Finset.range P.n, m P f i * P.Δ α i
        ≤ ∑ i ∈ Finset.range (P.n + 1), m P' f i * P'.Δ α i
-
   -- k is the index of x in P'
   obtain ⟨k, hk : P' k = x⟩ := P'.mem_iff_x.mp (P.mem_insert_self_iff.mpr hxP.Icc')
   obtain ⟨hk₀, hk₁⟩ := P.insert_idx_Ioo hxP hk
-
   have hk₂ : k < P.n + 1
     := by --
     exact Nat.lt_add_right 1 hk₁ -- ∎
@@ -82,9 +80,7 @@ private lemma L_mono₁ (x : ℝ)
     exact hk₁ -- ∎
   rw [<-Finset.sum_Ico_consecutive _ hk₄ hk₅]
   rw [Finset.sum_eq_sum_Ico_succ_bot hk₁]
-
   have φ (i : ℕ) : if i < k then P i = P' i else P i = P' (i + 1) := P.insert_get hxP hk i
-
   refine add_le_add ?_ (add_le_add ?_ ?_)
   rotate_right
   · simp only [sum₀ (Nat.zero_lt_succ (k + 1)), Nat.add_one_sub_one, add_tsub_cancel_right]
@@ -118,7 +114,6 @@ private lemma L_mono₁ (x : ℝ)
     have φ₁ := φ (k - 1)
     simp only [reduceIte, Nat.lt_irrefl k] at φ₀
     simp only [reduceIte, Nat.sub_one_lt_of_lt hk₀] at φ₁
-
     have : k + 1 < k + 2 := (Nat.lt_add_one (k + 1))
     rw [Finset.sum_eq_sum_Ico_succ_bot (Nat.lt_add_of_pos_right zero_lt_two)]
     rw [Finset.sum_eq_sum_Ico_succ_bot this]
@@ -191,11 +186,9 @@ private lemma U_anti₁ (x : ℝ)
   simp only [P.insert_n hxP]
   change ∑ i ∈ Finset.range (P.n + 1), M P' f i * P'.Δ α i
        ≤ ∑ i ∈ Finset.range P.n, M P f i * P.Δ α i
-
   -- k is the index of x in P'
   obtain ⟨k, hk : P' k = x⟩ := P'.mem_iff_x.mp (P.mem_insert_self_iff.mpr hxP.Icc')
   obtain ⟨hk₀, hk₁⟩ := P.insert_idx_Ioo hxP hk
-
   have hk₂ : k < P.n + 1
     := by --
     exact Nat.lt_add_right 1 hk₁ -- ∎
@@ -215,9 +208,7 @@ private lemma U_anti₁ (x : ℝ)
     exact hk₁ -- ∎
   rw [<-Finset.sum_Ico_consecutive _ hk₄ hk₅]
   rw [Finset.sum_eq_sum_Ico_succ_bot hk₁]
-
   have φ (i : ℕ) : if i < k then P i = P' i else P i = P' (i + 1) := P.insert_get hxP hk i
-
   refine add_le_add ?_ (add_le_add ?_ ?_)
   rotate_right
   · simp only [sum₀ (Nat.zero_lt_succ (k + 1)), Nat.add_one_sub_one, add_tsub_cancel_right]
@@ -252,17 +243,13 @@ private lemma U_anti₁ (x : ℝ)
     have φ₁ := φ (k - 1)
     simp only [reduceIte, Nat.lt_irrefl k] at φ₀
     simp only [reduceIte, Nat.sub_one_lt_of_lt hk₀] at φ₁
-
     have : k + 1 < k + 2 := (Nat.lt_add_one (k + 1))
     rw [Finset.sum_eq_sum_Ico_succ_bot (Nat.lt_add_of_pos_right zero_lt_two)]
     rw [Finset.sum_eq_sum_Ico_succ_bot this]
     rw [Finset.Ico_eq_empty_of_le le_rfl, Finset.sum_empty, add_zero]
-
     dsimp only [Partition.Δ]
     rw [add_tsub_cancel_right]
-
     rw [<-sub_add_sub_cancel (α (P k)) (α (P' k)) (α (P (k - 1))), mul_add, add_comm]
-
     have hIcc : Icc (P' (k - 1)) (P' k) ∪ Icc (P' k) (P' (k + 1))
       = Icc (P' (k - 1)) (P' (k + 1)) := by
       refine Icc_union_Icc_eq_Icc ?_ ?_
@@ -273,7 +260,6 @@ private lemma U_anti₁ (x : ℝ)
       refine BddOn.union ?_ ?_
       · exact P'.interval_bdd_on hf k
       · exact P'.interval_bdd_on hf (k + 1)
-
     refine add_le_add ?_ ?_
     · rw [φ₀]
       refine mul_le_mul_of_nonneg_right ?_ (α_nonneg hα _)

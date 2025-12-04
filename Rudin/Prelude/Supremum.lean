@@ -54,19 +54,19 @@ theorem sSup.set_add_right (hA : BddAbove A) (b : ℝ) : sSup A + b = sSup { a +
       use M + b
       intro y ⟨x, hxA, heq⟩
       subst heq
-      exact add_le_add_right (hM hxA) b
+      exact add_le_add_left (hM hxA) b
     · intro ε hε
       rw [<-Left.neg_pos_iff] at hε
       obtain ⟨x, hxA, hlt⟩ := sSup.exist_sub_lt_ε hA₀ hA (-ε) hε
       refine ⟨x + b, ⟨x, hxA, rfl⟩, ?_⟩
       rw [add_right_comm]
-      refine add_lt_add_right ?_ b
+      refine add_lt_add_left ?_ b
       rw [<-lt_add_neg_iff_add_lt]
       exact lt_add_of_tsub_lt_left hlt
   · refine csSup_le hAb₀ ?_
     intro y ⟨x, hxA, heq⟩
     subst heq
-    exact add_le_add_right (ConditionallyCompleteLattice.le_csSup A x hA hxA) _ -- ∎
+    exact add_le_add_left (ConditionallyCompleteLattice.le_csSup A x hA hxA) _ -- ∎
 
 include hA₀ in
 theorem sSup.set_add_left (hA : BddAbove A) (b : ℝ) : b + sSup A = sSup { b + a | a ∈ A }
