@@ -12,8 +12,8 @@ import Rudin.Partition.Interval
 import Rudin.Partition.Monotone
 import Rudin.Partition.OrderBot
 import Rudin.Partition.Prelude
-import Rudin.Partition.Prelude.Nodup
-import Rudin.Partition.Prelude.SortedList
+import Rudin.Partition.Prelude.OrderedInsert
+import Rudin.Partition.Prelude.SortedLE
 import Rudin.Partition.Single
 import Rudin.Partition.SpecialPartitions
 import Rudin.Partition.Union

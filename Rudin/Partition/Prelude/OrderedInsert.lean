@@ -38,26 +38,20 @@ theorem Nodup.orderedInsert (hl : l.Nodup) (hx : x ∉ l) : (l.orderedInsert (·
   let r : ℝ → ℝ → Prop := (· ≤ ·)
   induction l with
   | nil =>
-    rw [List.orderedInsert, nodup_cons];
+    rw [List.orderedInsert, nodup_cons]
     exact ⟨not_mem_nil, hl⟩
   | cons y ys ih =>
-    have hys : ys.Nodup := hl.of_cons
-    have hxys : x ∉ ys := not_mem_of_not_mem_cons hx
-    specialize ih hl.of_cons (not_mem_of_not_mem_cons hx)
-    change (ys.orderedInsert r x).Nodup at ih
     change ((y :: ys).orderedInsert r x).Nodup
     rw [List.orderedInsert]
-    if hle : x ≤ y then
-      have : r x y := hle
-      simp only [↓reduceIte, this]
+    if hle : r x y then -- x ≤ y
+      simp only [↓reduceIte, hle]
       exact hl.cons hx
     else
-      have : ¬r x y := hle
-      simp only [↓reduceIte, this]
+      simp only [↓reduceIte, hle]
       refine nodup_cons.mpr ?_
+      specialize ih hl.of_cons (not_mem_of_not_mem_cons hx)
       refine ⟨?_, ih⟩
-      rw [mem_orderedInsert]
-      push_neg
+      rw [mem_orderedInsert, not_or]
       refine ⟨?_, hl.notMem⟩
       exact (ne_of_not_mem_cons hx).symm -- ∎
 

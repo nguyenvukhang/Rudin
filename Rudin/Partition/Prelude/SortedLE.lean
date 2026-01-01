@@ -1,0 +1,38 @@
+import Mathlib.Data.List.NodupEquivFin
+
+universe u
+
+variable {α : Type u} [Preorder α] {l : List α}
+
+namespace List
+
+section Endpoints
+variable (h₀ : l ≠ []) (hl : l.SortedLE)
+
+include h₀ hl in
+theorem SortedLE.sorted_head_min : ∀ x ∈ l, l.head h₀ ≤ x
+  := by --
+  induction l with
+  | nil => contradiction
+  | cons a l ih =>
+    intro x hx
+    change a ≤ x
+    replace hl := List.pairwise_cons.mp hl.pairwise
+    replace hx := List.mem_cons.mp hx
+    rcases hx with hxa | hxl
+    · exact ge_of_eq hxa
+    · exact hl.1 x hxl -- ∎
+
+include h₀ hl in
+theorem SortedLE.sorted_last_max : ∀ x ∈ l, x ≤ l.getLast h₀
+  := by --
+  intro x hx
+  rw [mem_iff_get] at hx
+  obtain ⟨i, hi⟩ := hx
+  subst hi
+  rw [getLast_eq_getElem h₀]
+  exact hl <| Nat.le_sub_one_of_lt i.is_lt -- ∎
+
+end Endpoints
+
+end List

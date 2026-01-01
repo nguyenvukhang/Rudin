@@ -14,6 +14,7 @@ check: generate
 generate:
 	slope generate Rudin.Alpha
 	slope generate Rudin.Partition
+	slope generate Rudin.Partition.Prelude
 	slope generate Rudin.Prelude
 	slope generate Rudin.Lemmas
 

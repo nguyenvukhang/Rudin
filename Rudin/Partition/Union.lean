@@ -1,5 +1,5 @@
 import Rudin.Partition.Endpoints
-import Rudin.Partition.Prelude.SortedList
+import Rudin.Partition.Prelude.SortedLE
 
 namespace Rudin
 
@@ -26,7 +26,7 @@ noncomputable instance : Union (Partition I)
     head' := by
       rw [<-List.head_eq_iff_head?_eq_some hl₀]
       refine le_antisymm ?_ ?_
-      · exact List.sorted_head_min hl₀ hl_sort a hl_a
+      · exact hl_sort.sorted_head_min hl₀ a hl_a
       · have h_min : s.min' hs₀ = a := by
           refine (Finset.min'_eq_iff s hs₀ a).mpr ⟨hs_a, fun x hx ↦ ?_⟩
           rcases Finset.mem_union.mp hx with hx₁ | hx₂
@@ -45,7 +45,7 @@ noncomputable instance : Union (Partition I)
             · exact P₂.max_b x hx₂
         rw [<-h_max]
         exact Finset.le_max' s _ (hl_mem.mp (List.getLast_mem hl₀))
-      · exact List.sorted_last_max hl₀ hl_sort b hl_b
+      · exact hl_sort.sorted_last_max hl₀ b hl_b
     sorted' := Finset.sortedLT_sort s
   } -- ∎
 
