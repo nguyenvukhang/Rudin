@@ -13,7 +13,14 @@ noncomputable def single : Partition I
     l := [a, x, b]
     head' := rfl
     tail' := rfl
-    sorted' := List.Sorted.cons x.prop.1 (List.Sorted.cons x.prop.2 (List.sorted_singleton b))
+    sorted' := by
+      open List in
+      refine Pairwise.sortedLT ?_
+      refine pairwise_cons_cons.mpr ?_
+      refine ⟨?_, ?_, ?_⟩
+      · exact x.prop.1
+      · exact pairwise_pair.mpr I
+      · exact pairwise_pair.mpr x.prop.2
   } -- ∎
 
 /-- If the input `x` is within bounds, add it, else ignore. -/

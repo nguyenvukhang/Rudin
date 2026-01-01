@@ -37,10 +37,11 @@ end IsInsertable
 noncomputable def ι (h : IsInsertable x P) : Partition I
   := by --
   let l' := P.l.orderedInsert (· ≤ ·) x
-  have sorted' : l'.Sorted (· < ·) := by
-    refine P.sorted'.orderedInsert_sorted_lt ?_
-    rw [<-P.mem_iff_mem_list]
-    exact h.notMem'
+  have sorted' : l'.SortedLT := by
+    sorry
+    -- refine P.sorted'.orderedInsert_sorted_lt ?_
+    -- rw [<-P.mem_iff_mem_list]
+    -- exact h.notMem'
   have h₀ : l' ≠ [] := by
     refine List.ne_nil_of_length_pos ?_
     rw [List.orderedInsert_length]
@@ -52,7 +53,7 @@ noncomputable def ι (h : IsInsertable x P) : Partition I
       have ha' : a ∈ l' := by
         rw [List.mem_orderedInsert]
         exact Or.inr P.mem_aᵢ
-      exact List.sorted_head_min h₀ sorted'.le_of_lt a ha'
+      exact List.sorted_head_min h₀ sorted'.sortedLE a ha'
     · -- a ≤ head. This follows from the minimality of a ∈ P.
       have h : l'.head h₀ ∈ l' := List.head_mem h₀
       rw [List.mem_orderedInsert] at h
@@ -75,7 +76,7 @@ noncomputable def ι (h : IsInsertable x P) : Partition I
       have hb' : b ∈ l' := by
         rw [List.mem_orderedInsert]
         exact Or.inr P.mem_bᵢ
-      exact List.sorted_last_max h₀ sorted'.le_of_lt b hb' -- ∎
+      exact List.sorted_last_max h₀ sorted'.sortedLE b hb' -- ∎
 
 noncomputable def ι' (x : ℝ) (P : Partition I) : Partition I
   := by --

@@ -38,14 +38,14 @@ example {I : a < b} : FunLike (Partition I) ℕ ℝ where
       rewrite [dif_pos ℓ₀, dif_pos (Nat.sub_lt_of_lt hc₁)] at h
       conv at h => lhs; rw [ℓb P₁, <-ℓb P₂]
       have hlt : P₁.n - 1 < P₂.n - 1 := Nat.sub_lt_sub_right ℓ₁ hc₁
-      exact False.elim (h.not_gt (P₂.sorted'.get_strictMono hlt))
+      exact False.elim (h.not_gt (P₂.sorted' hlt))
     else if hc₂ : P₂.n < P₁.n then
       specialize h (P₂.n - 1)
       simp only [tsub_lt_self_iff, zero_lt_one, and_true] at h
       rewrite [dif_pos ℓ₀, dif_pos (Nat.sub_lt_of_lt hc₂)] at h
       conv at h => rhs; rw [ℓb P₂, <-ℓb P₁]
       have hlt : P₂.n - 1 < P₁.n - 1 := Nat.sub_lt_sub_right ℓ₁ hc₂
-      exact False.elim (h.not_lt (P₁.sorted'.get_strictMono hlt))
+      exact False.elim (h.not_lt (P₁.sorted' hlt))
     else
     have heq_n : P₁.n = P₂.n := le_antisymm (Nat.le_of_not_lt hc₂) (Nat.le_of_not_lt hc₁)
     rw [Partition.ext_iff]

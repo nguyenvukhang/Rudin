@@ -12,7 +12,7 @@ instance : Bot (Partition I)
   := by --
   refine { bot := ?_ }
   refine { l := [a, b], head' := rfl, tail' := rfl, sorted' := ?_ }
-  exact List.Sorted.cons I (List.sorted_singleton b) -- ∎
+  exact (List.pairwise_pair.mpr I).sortedLT -- ∎
 
 example : (⊥ : Partition I).n = 2 := rfl -- length is immediately 2.
 

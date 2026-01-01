@@ -68,7 +68,7 @@ theorem le_index_of_eq_b {i : ℕ} : P i = b → P.n - 1 ≤ i
   intro h
   rw [P.fn_eq, dif_pos (Nat.lt_of_lt_pred h)]
   conv => rhs; rw [P.b_eqᵢ]
-  exact (P.get_strictMono h).ne -- ∎
+  exact (P.sorted' h).ne -- ∎
 
 end Partition
 end Rudin

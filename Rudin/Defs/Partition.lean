@@ -11,7 +11,7 @@ structure Partition (I : a < b) where
   l : List ℝ
   head' : l.head? = some a
   tail' : l.getLast? = some b
-  sorted' : l.Sorted (· < ·)
+  sorted' : l.SortedLT
 
 variable {I : a < b} (P : Partition I)
 
@@ -50,18 +50,18 @@ def head : ℝ := P.l.head ℓ₀
 `tail'` in the definitions. -/
 def tail : ℝ := P.l.getLast ℓ₀
 
-lemma sorted_le (P : Partition I) : P.l.Sorted (· ≤ ·) := P.sorted'.le_of_lt
+lemma sorted_le (P : Partition I) : P.l.SortedLE := P.sorted'.sortedLE
 
 /-- The partition contains no duplicate boundary points. -/
 lemma nodup : P.l.Nodup
   := by --
   rw [List.nodup_iff_pairwise_ne, List.pairwise_iff_get]
   intro i j hij
-  exact (P.sorted'.get_strictMono hij).ne -- ∎
+  exact (P.sorted' hij).ne -- ∎
 
 lemma eq_Finset_sort (P : Partition I) : P.l.toFinset.sort (· ≤ ·) = P.l
   := by -- ∎
-  exact (List.toFinset_sort (· ≤ ·) P.nodup).mpr P.sorted_le -- ∎
+  exact (List.toFinset_sort (· ≤ ·) P.nodup).mpr P.sorted_le.pairwise -- ∎
 
 /-- Each partition corresponds uniquely to a representative set. -/
 instance : SetLike (Partition I) ℝ
@@ -91,14 +91,14 @@ instance {I : a < b} : FunLike (Partition I) ℕ ℝ
         rewrite [dif_pos ℓ₀, dif_pos (Nat.sub_lt_of_lt hc₁)] at h
         conv at h => lhs; rw [ℓb P₁, <-ℓb P₂]
         have hlt : P₁.n - 1 < P₂.n - 1 := Nat.sub_lt_sub_right ℓ₁ hc₁
-        exact False.elim (h.not_gt (P₂.sorted'.get_strictMono hlt))
+        exact False.elim (h.not_gt (P₂.sorted' hlt))
       else if hc₂ : P₂.n < P₁.n then
         specialize h (P₂.n - 1)
         simp only [tsub_lt_self_iff, zero_lt_one, and_true] at h
         rewrite [dif_pos ℓ₀, dif_pos (Nat.sub_lt_of_lt hc₂)] at h
         conv at h => rhs; rw [ℓb P₂, <-ℓb P₁]
         have hlt : P₂.n - 1 < P₁.n - 1 := Nat.sub_lt_sub_right ℓ₁ hc₂
-        exact False.elim (h.not_lt (P₁.sorted'.get_strictMono hlt))
+        exact False.elim (h.not_lt (P₁.sorted' hlt))
       else
       have heq_n : P₁.n = P₂.n := le_antisymm (Nat.le_of_not_lt hc₂) (Nat.le_of_not_lt hc₁)
       rw [Partition.ext_iff]
@@ -183,7 +183,6 @@ def ofFn : Partition I
       refine (List.getLast_eq_iff_getLast?_eq_some hl₀).mp ?_
       exact List.getLast_eq_getElem hl₀
     sorted' := by
-      rw [List.Sorted, List.pairwise_iff_get]
       intro i j hij
       dsimp only [l]
       simp only [List.get_eq_getElem, List.getElem_ofFn]

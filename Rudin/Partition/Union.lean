@@ -19,7 +19,7 @@ noncomputable instance : Union (Partition I)
   have hs₀ : s.Nonempty := Set.nonempty_of_mem hs_a
   have hl_a : a ∈ l := hl_mem.mpr hs_a
   have hl_b : b ∈ l := hl_mem.mpr (Finset.mem_union_left s₂ P₁.mem_b)
-  have hl_sort := s.sort_sorted (· ≤ ·)
+  have hl_sort : List.SortedLE l := (s.pairwise_sort (· ≤ ·)).sortedLE
   have hl₀ : l ≠ [] := List.ne_nil_of_mem hl_a
   exact {
     l := l
@@ -46,7 +46,7 @@ noncomputable instance : Union (Partition I)
         rw [<-h_max]
         exact Finset.le_max' s _ (hl_mem.mp (List.getLast_mem hl₀))
       · exact List.sorted_last_max hl₀ hl_sort b hl_b
-    sorted' := Finset.sort_sorted_lt s
+    sorted' := Finset.sortedLT_sort s
   } -- ∎
 
 @[simp]
